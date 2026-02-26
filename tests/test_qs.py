@@ -4,7 +4,7 @@ from urllib.parse import unquote
 
 import pytest
 
-from spec._qs import Querystring, stringify
+from vibedropper._qs import Querystring, stringify
 
 
 def test_empty() -> None:

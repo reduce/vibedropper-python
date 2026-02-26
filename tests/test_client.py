@@ -19,12 +19,12 @@ import pytest
 from respx import MockRouter
 from pydantic import ValidationError
 
-from spec import Spec, AsyncSpec, APIResponseValidationError
-from spec._types import Omit
-from spec._utils import asyncify
-from spec._models import BaseModel, FinalRequestOptions
-from spec._exceptions import SpecError, APIStatusError, APITimeoutError, APIResponseValidationError
-from spec._base_client import (
+from vibedropper import Vibedropper, AsyncVibedropper, APIResponseValidationError
+from vibedropper._types import Omit
+from vibedropper._utils import asyncify
+from vibedropper._models import BaseModel, FinalRequestOptions
+from vibedropper._exceptions import APIStatusError, APITimeoutError, VibedropperError, APIResponseValidationError
+from vibedropper._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
     BaseClient,
@@ -103,7 +103,7 @@ async def _make_async_iterator(iterable: Iterable[T], counter: Optional[Counter]
         yield item
 
 
-def _get_open_connections(client: Spec | AsyncSpec) -> int:
+def _get_open_connections(client: Vibedropper | AsyncVibedropper) -> int:
     transport = client._client._transport
     assert isinstance(transport, httpx.HTTPTransport) or isinstance(transport, httpx.AsyncHTTPTransport)
 
@@ -111,9 +111,9 @@ def _get_open_connections(client: Spec | AsyncSpec) -> int:
     return len(pool._requests)
 
 
-class TestSpec:
+class TestVibedropper:
     @pytest.mark.respx(base_url=base_url)
-    def test_raw_response(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_raw_response(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         respx_mock.post("/foo").mock(return_value=httpx.Response(200, json={"foo": "bar"}))
 
         response = client.post("/foo", cast_to=httpx.Response)
@@ -122,7 +122,7 @@ class TestSpec:
         assert response.json() == {"foo": "bar"}
 
     @pytest.mark.respx(base_url=base_url)
-    def test_raw_response_for_binary(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_raw_response_for_binary(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         respx_mock.post("/foo").mock(
             return_value=httpx.Response(200, headers={"Content-Type": "application/binary"}, content='{"foo": "bar"}')
         )
@@ -132,7 +132,7 @@ class TestSpec:
         assert isinstance(response, httpx.Response)
         assert response.json() == {"foo": "bar"}
 
-    def test_copy(self, client: Spec) -> None:
+    def test_copy(self, client: Vibedropper) -> None:
         copied = client.copy()
         assert id(copied) != id(client)
 
@@ -140,7 +140,7 @@ class TestSpec:
         assert copied.api_key == "another My API Key"
         assert client.api_key == "My API Key"
 
-    def test_copy_default_options(self, client: Spec) -> None:
+    def test_copy_default_options(self, client: Vibedropper) -> None:
         # options that have a default are overridden correctly
         copied = client.copy(max_retries=7)
         assert copied.max_retries == 7
@@ -157,7 +157,7 @@ class TestSpec:
         assert isinstance(client.timeout, httpx.Timeout)
 
     def test_copy_default_headers(self) -> None:
-        client = Spec(
+        client = Vibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         assert client.default_headers["X-Foo"] == "bar"
@@ -192,7 +192,7 @@ class TestSpec:
         client.close()
 
     def test_copy_default_query(self) -> None:
-        client = Spec(
+        client = Vibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
         )
         assert _get_params(client)["foo"] == "bar"
@@ -229,7 +229,7 @@ class TestSpec:
 
         client.close()
 
-    def test_copy_signature(self, client: Spec) -> None:
+    def test_copy_signature(self, client: Vibedropper) -> None:
         # ensure the same parameters that can be passed to the client are defined in the `.copy()` method
         init_signature = inspect.signature(
             # mypy doesn't like that we access the `__init__` property.
@@ -246,7 +246,7 @@ class TestSpec:
             assert copy_param is not None, f"copy() signature is missing the {name} param"
 
     @pytest.mark.skipif(sys.version_info >= (3, 10), reason="fails because of a memory leak that started from 3.12")
-    def test_copy_build_request(self, client: Spec) -> None:
+    def test_copy_build_request(self, client: Vibedropper) -> None:
         options = FinalRequestOptions(method="get", url="/foo")
 
         def build_request(options: FinalRequestOptions) -> None:
@@ -286,10 +286,10 @@ class TestSpec:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "spec/_legacy_response.py",
-                        "spec/_response.py",
+                        "vibedropper/_legacy_response.py",
+                        "vibedropper/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "spec/_compat.py",
+                        "vibedropper/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -308,7 +308,7 @@ class TestSpec:
                     print(frame)
             raise AssertionError()
 
-    def test_request_timeout(self, client: Spec) -> None:
+    def test_request_timeout(self, client: Vibedropper) -> None:
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
         assert timeout == DEFAULT_TIMEOUT
@@ -318,7 +318,9 @@ class TestSpec:
         assert timeout == httpx.Timeout(100.0)
 
     def test_client_timeout_option(self) -> None:
-        client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0))
+        client = Vibedropper(
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
+        )
 
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
@@ -329,7 +331,9 @@ class TestSpec:
     def test_http_client_timeout_option(self) -> None:
         # custom timeout given to the httpx client should be used
         with httpx.Client(timeout=None) as http_client:
-            client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client)
+            client = Vibedropper(
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+            )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
             timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
@@ -339,7 +343,9 @@ class TestSpec:
 
         # no timeout given to the httpx client should not use the httpx default
         with httpx.Client() as http_client:
-            client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client)
+            client = Vibedropper(
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+            )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
             timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
@@ -349,7 +355,9 @@ class TestSpec:
 
         # explicitly passing the default timeout currently results in it being ignored
         with httpx.Client(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
-            client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client)
+            client = Vibedropper(
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+            )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
             timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
@@ -360,7 +368,7 @@ class TestSpec:
     async def test_invalid_http_client(self) -> None:
         with pytest.raises(TypeError, match="Invalid `http_client` arg"):
             async with httpx.AsyncClient() as http_client:
-                Spec(
+                Vibedropper(
                     base_url=base_url,
                     api_key=api_key,
                     _strict_response_validation=True,
@@ -368,14 +376,14 @@ class TestSpec:
                 )
 
     def test_default_headers_option(self) -> None:
-        test_client = Spec(
+        test_client = Vibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         request = test_client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
         assert request.headers.get("x-stainless-lang") == "python"
 
-        test_client2 = Spec(
+        test_client2 = Vibedropper(
             base_url=base_url,
             api_key=api_key,
             _strict_response_validation=True,
@@ -392,17 +400,17 @@ class TestSpec:
         test_client2.close()
 
     def test_validate_headers(self) -> None:
-        client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        client = Vibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("api_key") == api_key
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
-        with pytest.raises(SpecError):
-            with update_env(**{"PETSTORE_API_KEY": Omit()}):
-                client2 = Spec(base_url=base_url, api_key=None, _strict_response_validation=True)
+        with pytest.raises(VibedropperError):
+            with update_env(**{"VIBEDROPPER_API_KEY": Omit()}):
+                client2 = Vibedropper(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
     def test_default_query_option(self) -> None:
-        client = Spec(
+        client = Vibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -421,7 +429,7 @@ class TestSpec:
 
         client.close()
 
-    def test_request_extra_json(self, client: Spec) -> None:
+    def test_request_extra_json(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -455,7 +463,7 @@ class TestSpec:
         data = json.loads(request.content.decode("utf-8"))
         assert data == {"foo": "bar", "baz": None}
 
-    def test_request_extra_headers(self, client: Spec) -> None:
+    def test_request_extra_headers(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -477,7 +485,7 @@ class TestSpec:
         )
         assert request.headers.get("X-Bar") == "false"
 
-    def test_request_extra_query(self, client: Spec) -> None:
+    def test_request_extra_query(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -518,7 +526,7 @@ class TestSpec:
         params = dict(request.url.params)
         assert params == {"foo": "2"}
 
-    def test_multipart_repeating_array(self, client: Spec) -> None:
+    def test_multipart_repeating_array(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions.construct(
                 method="post",
@@ -548,7 +556,7 @@ class TestSpec:
         ]
 
     @pytest.mark.respx(base_url=base_url)
-    def test_binary_content_upload(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_binary_content_upload(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         respx_mock.post("/upload").mock(side_effect=mirror_request_content)
 
         file_content = b"Hello, this is a test file."
@@ -573,7 +581,7 @@ class TestSpec:
             assert counter.value == 0, "the request body should not have been read"
             return httpx.Response(200, content=request.read())
 
-        with Spec(
+        with Vibedropper(
             base_url=base_url,
             api_key=api_key,
             _strict_response_validation=True,
@@ -592,7 +600,7 @@ class TestSpec:
             assert counter.value == 1
 
     @pytest.mark.respx(base_url=base_url)
-    def test_binary_content_upload_with_body_is_deprecated(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_binary_content_upload_with_body_is_deprecated(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         respx_mock.post("/upload").mock(side_effect=mirror_request_content)
 
         file_content = b"Hello, this is a test file."
@@ -612,7 +620,7 @@ class TestSpec:
         assert response.content == file_content
 
     @pytest.mark.respx(base_url=base_url)
-    def test_basic_union_response(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_basic_union_response(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         class Model1(BaseModel):
             name: str
 
@@ -626,7 +634,7 @@ class TestSpec:
         assert response.foo == "bar"
 
     @pytest.mark.respx(base_url=base_url)
-    def test_union_response_different_types(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_union_response_different_types(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         """Union of objects with the same field name using a different type"""
 
         class Model1(BaseModel):
@@ -648,7 +656,7 @@ class TestSpec:
         assert response.foo == 1
 
     @pytest.mark.respx(base_url=base_url)
-    def test_non_application_json_content_type_for_json_data(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_non_application_json_content_type_for_json_data(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         """
         Response that sets Content-Type to something other than application/json but returns json data
         """
@@ -669,7 +677,9 @@ class TestSpec:
         assert response.foo == 2
 
     def test_base_url_setter(self) -> None:
-        client = Spec(base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True)
+        client = Vibedropper(
+            base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True
+        )
         assert client.base_url == "https://example.com/from_init/"
 
         client.base_url = "https://example.com/from_setter"  # type: ignore[assignment]
@@ -679,15 +689,17 @@ class TestSpec:
         client.close()
 
     def test_base_url_env(self) -> None:
-        with update_env(SPEC_BASE_URL="http://localhost:5000/from/env"):
-            client = Spec(api_key=api_key, _strict_response_validation=True)
+        with update_env(VIBEDROPPER_BASE_URL="http://localhost:5000/from/env"):
+            client = Vibedropper(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
-            Spec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            Spec(
+            Vibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            Vibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -696,7 +708,7 @@ class TestSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    def test_base_url_trailing_slash(self, client: Spec) -> None:
+    def test_base_url_trailing_slash(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -710,8 +722,10 @@ class TestSpec:
     @pytest.mark.parametrize(
         "client",
         [
-            Spec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            Spec(
+            Vibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            Vibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -720,7 +734,7 @@ class TestSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    def test_base_url_no_trailing_slash(self, client: Spec) -> None:
+    def test_base_url_no_trailing_slash(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -734,8 +748,10 @@ class TestSpec:
     @pytest.mark.parametrize(
         "client",
         [
-            Spec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            Spec(
+            Vibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            Vibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -744,7 +760,7 @@ class TestSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    def test_absolute_request_url(self, client: Spec) -> None:
+    def test_absolute_request_url(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -756,7 +772,7 @@ class TestSpec:
         client.close()
 
     def test_copied_client_does_not_close_http(self) -> None:
-        test_client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = Vibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         assert not test_client.is_closed()
 
         copied = test_client.copy()
@@ -767,7 +783,7 @@ class TestSpec:
         assert not test_client.is_closed()
 
     def test_client_context_manager(self) -> None:
-        test_client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = Vibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         with test_client as c2:
             assert c2 is test_client
             assert not c2.is_closed()
@@ -775,7 +791,7 @@ class TestSpec:
         assert test_client.is_closed()
 
     @pytest.mark.respx(base_url=base_url)
-    def test_client_response_validation_error(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_client_response_validation_error(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         class Model(BaseModel):
             foo: str
 
@@ -788,7 +804,9 @@ class TestSpec:
 
     def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
-            Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None))
+            Vibedropper(
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None)
+            )
 
     @pytest.mark.respx(base_url=base_url)
     def test_received_text_for_expected_json(self, respx_mock: MockRouter) -> None:
@@ -797,12 +815,12 @@ class TestSpec:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        strict_client = Vibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         with pytest.raises(APIResponseValidationError):
             strict_client.get("/foo", cast_to=Model)
 
-        non_strict_client = Spec(base_url=base_url, api_key=api_key, _strict_response_validation=False)
+        non_strict_client = Vibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=False)
 
         response = non_strict_client.get("/foo", cast_to=Model)
         assert isinstance(response, str)  # type: ignore[unreachable]
@@ -833,39 +851,39 @@ class TestSpec:
     )
     @mock.patch("time.time", mock.MagicMock(return_value=1696004797))
     def test_parse_retry_after_header(
-        self, remaining_retries: int, retry_after: str, timeout: float, client: Spec
+        self, remaining_retries: int, retry_after: str, timeout: float, client: Vibedropper
     ) -> None:
         headers = httpx.Headers({"retry-after": retry_after})
         options = FinalRequestOptions(method="get", url="/foo", max_retries=3)
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Spec) -> None:
-        respx_mock.get("/store/inventory").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+    def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Vibedropper) -> None:
+        respx_mock.get("/lists").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            client.store.with_streaming_response.list_inventory().__enter__()
+            client.lists.with_streaming_response.list().__enter__()
 
         assert _get_open_connections(client) == 0
 
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Spec) -> None:
-        respx_mock.get("/store/inventory").mock(return_value=httpx.Response(500))
+    def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Vibedropper) -> None:
+        respx_mock.get("/lists").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            client.store.with_streaming_response.list_inventory().__enter__()
+            client.lists.with_streaming_response.list().__enter__()
         assert _get_open_connections(client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     def test_retries_taken(
         self,
-        client: Spec,
+        client: Vibedropper,
         failures_before_success: int,
         failure_mode: Literal["status", "exception"],
         respx_mock: MockRouter,
@@ -883,39 +901,18 @@ class TestSpec:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
 
-        response = client.store.with_raw_response.list_inventory()
+        response = client.lists.with_raw_response.list()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    def test_omit_retry_count_header(self, client: Spec, failures_before_success: int, respx_mock: MockRouter) -> None:
-        client = client.with_options(max_retries=4)
-
-        nb_retries = 0
-
-        def retry_handler(_request: httpx.Request) -> httpx.Response:
-            nonlocal nb_retries
-            if nb_retries < failures_before_success:
-                nb_retries += 1
-                return httpx.Response(500)
-            return httpx.Response(200)
-
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
-
-        response = client.store.with_raw_response.list_inventory(extra_headers={"x-stainless-retry-count": Omit()})
-
-        assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
-
-    @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
-    @pytest.mark.respx(base_url=base_url)
-    def test_overwrite_retry_count_header(
-        self, client: Spec, failures_before_success: int, respx_mock: MockRouter
+    def test_omit_retry_count_header(
+        self, client: Vibedropper, failures_before_success: int, respx_mock: MockRouter
     ) -> None:
         client = client.with_options(max_retries=4)
 
@@ -928,9 +925,32 @@ class TestSpec:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
 
-        response = client.store.with_raw_response.list_inventory(extra_headers={"x-stainless-retry-count": "42"})
+        response = client.lists.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
+
+        assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
+
+    @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @pytest.mark.respx(base_url=base_url)
+    def test_overwrite_retry_count_header(
+        self, client: Vibedropper, failures_before_success: int, respx_mock: MockRouter
+    ) -> None:
+        client = client.with_options(max_retries=4)
+
+        nb_retries = 0
+
+        def retry_handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal nb_retries
+            if nb_retries < failures_before_success:
+                nb_retries += 1
+                return httpx.Response(500)
+            return httpx.Response(200)
+
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
+
+        response = client.lists.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
@@ -965,7 +985,7 @@ class TestSpec:
         )
 
     @pytest.mark.respx(base_url=base_url)
-    def test_follow_redirects(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_follow_redirects(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         # Test that the default follow_redirects=True allows following redirects
         respx_mock.post("/redirect").mock(
             return_value=httpx.Response(302, headers={"Location": f"{base_url}/redirected"})
@@ -977,7 +997,7 @@ class TestSpec:
         assert response.json() == {"status": "ok"}
 
     @pytest.mark.respx(base_url=base_url)
-    def test_follow_redirects_disabled(self, respx_mock: MockRouter, client: Spec) -> None:
+    def test_follow_redirects_disabled(self, respx_mock: MockRouter, client: Vibedropper) -> None:
         # Test that follow_redirects=False prevents following redirects
         respx_mock.post("/redirect").mock(
             return_value=httpx.Response(302, headers={"Location": f"{base_url}/redirected"})
@@ -990,9 +1010,9 @@ class TestSpec:
         assert exc_info.value.response.headers["Location"] == f"{base_url}/redirected"
 
 
-class TestAsyncSpec:
+class TestAsyncVibedropper:
     @pytest.mark.respx(base_url=base_url)
-    async def test_raw_response(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_raw_response(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         respx_mock.post("/foo").mock(return_value=httpx.Response(200, json={"foo": "bar"}))
 
         response = await async_client.post("/foo", cast_to=httpx.Response)
@@ -1001,7 +1021,7 @@ class TestAsyncSpec:
         assert response.json() == {"foo": "bar"}
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_raw_response_for_binary(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_raw_response_for_binary(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         respx_mock.post("/foo").mock(
             return_value=httpx.Response(200, headers={"Content-Type": "application/binary"}, content='{"foo": "bar"}')
         )
@@ -1011,7 +1031,7 @@ class TestAsyncSpec:
         assert isinstance(response, httpx.Response)
         assert response.json() == {"foo": "bar"}
 
-    def test_copy(self, async_client: AsyncSpec) -> None:
+    def test_copy(self, async_client: AsyncVibedropper) -> None:
         copied = async_client.copy()
         assert id(copied) != id(async_client)
 
@@ -1019,7 +1039,7 @@ class TestAsyncSpec:
         assert copied.api_key == "another My API Key"
         assert async_client.api_key == "My API Key"
 
-    def test_copy_default_options(self, async_client: AsyncSpec) -> None:
+    def test_copy_default_options(self, async_client: AsyncVibedropper) -> None:
         # options that have a default are overridden correctly
         copied = async_client.copy(max_retries=7)
         assert copied.max_retries == 7
@@ -1036,7 +1056,7 @@ class TestAsyncSpec:
         assert isinstance(async_client.timeout, httpx.Timeout)
 
     async def test_copy_default_headers(self) -> None:
-        client = AsyncSpec(
+        client = AsyncVibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         assert client.default_headers["X-Foo"] == "bar"
@@ -1071,7 +1091,7 @@ class TestAsyncSpec:
         await client.close()
 
     async def test_copy_default_query(self) -> None:
-        client = AsyncSpec(
+        client = AsyncVibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
         )
         assert _get_params(client)["foo"] == "bar"
@@ -1108,7 +1128,7 @@ class TestAsyncSpec:
 
         await client.close()
 
-    def test_copy_signature(self, async_client: AsyncSpec) -> None:
+    def test_copy_signature(self, async_client: AsyncVibedropper) -> None:
         # ensure the same parameters that can be passed to the client are defined in the `.copy()` method
         init_signature = inspect.signature(
             # mypy doesn't like that we access the `__init__` property.
@@ -1125,7 +1145,7 @@ class TestAsyncSpec:
             assert copy_param is not None, f"copy() signature is missing the {name} param"
 
     @pytest.mark.skipif(sys.version_info >= (3, 10), reason="fails because of a memory leak that started from 3.12")
-    def test_copy_build_request(self, async_client: AsyncSpec) -> None:
+    def test_copy_build_request(self, async_client: AsyncVibedropper) -> None:
         options = FinalRequestOptions(method="get", url="/foo")
 
         def build_request(options: FinalRequestOptions) -> None:
@@ -1165,10 +1185,10 @@ class TestAsyncSpec:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "spec/_legacy_response.py",
-                        "spec/_response.py",
+                        "vibedropper/_legacy_response.py",
+                        "vibedropper/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "spec/_compat.py",
+                        "vibedropper/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -1187,7 +1207,7 @@ class TestAsyncSpec:
                     print(frame)
             raise AssertionError()
 
-    async def test_request_timeout(self, async_client: AsyncSpec) -> None:
+    async def test_request_timeout(self, async_client: AsyncVibedropper) -> None:
         request = async_client._build_request(FinalRequestOptions(method="get", url="/foo"))
         timeout = httpx.Timeout(**request.extensions["timeout"])  # type: ignore
         assert timeout == DEFAULT_TIMEOUT
@@ -1199,7 +1219,7 @@ class TestAsyncSpec:
         assert timeout == httpx.Timeout(100.0)
 
     async def test_client_timeout_option(self) -> None:
-        client = AsyncSpec(
+        client = AsyncVibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
         )
 
@@ -1212,7 +1232,7 @@ class TestAsyncSpec:
     async def test_http_client_timeout_option(self) -> None:
         # custom timeout given to the httpx client should be used
         async with httpx.AsyncClient(timeout=None) as http_client:
-            client = AsyncSpec(
+            client = AsyncVibedropper(
                 base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
@@ -1224,7 +1244,7 @@ class TestAsyncSpec:
 
         # no timeout given to the httpx client should not use the httpx default
         async with httpx.AsyncClient() as http_client:
-            client = AsyncSpec(
+            client = AsyncVibedropper(
                 base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
@@ -1236,7 +1256,7 @@ class TestAsyncSpec:
 
         # explicitly passing the default timeout currently results in it being ignored
         async with httpx.AsyncClient(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
-            client = AsyncSpec(
+            client = AsyncVibedropper(
                 base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
@@ -1249,7 +1269,7 @@ class TestAsyncSpec:
     def test_invalid_http_client(self) -> None:
         with pytest.raises(TypeError, match="Invalid `http_client` arg"):
             with httpx.Client() as http_client:
-                AsyncSpec(
+                AsyncVibedropper(
                     base_url=base_url,
                     api_key=api_key,
                     _strict_response_validation=True,
@@ -1257,14 +1277,14 @@ class TestAsyncSpec:
                 )
 
     async def test_default_headers_option(self) -> None:
-        test_client = AsyncSpec(
+        test_client = AsyncVibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         request = test_client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
         assert request.headers.get("x-stainless-lang") == "python"
 
-        test_client2 = AsyncSpec(
+        test_client2 = AsyncVibedropper(
             base_url=base_url,
             api_key=api_key,
             _strict_response_validation=True,
@@ -1281,17 +1301,17 @@ class TestAsyncSpec:
         await test_client2.close()
 
     def test_validate_headers(self) -> None:
-        client = AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        client = AsyncVibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("api_key") == api_key
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
-        with pytest.raises(SpecError):
-            with update_env(**{"PETSTORE_API_KEY": Omit()}):
-                client2 = AsyncSpec(base_url=base_url, api_key=None, _strict_response_validation=True)
+        with pytest.raises(VibedropperError):
+            with update_env(**{"VIBEDROPPER_API_KEY": Omit()}):
+                client2 = AsyncVibedropper(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
     async def test_default_query_option(self) -> None:
-        client = AsyncSpec(
+        client = AsyncVibedropper(
             base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1310,7 +1330,7 @@ class TestAsyncSpec:
 
         await client.close()
 
-    def test_request_extra_json(self, client: Spec) -> None:
+    def test_request_extra_json(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1344,7 +1364,7 @@ class TestAsyncSpec:
         data = json.loads(request.content.decode("utf-8"))
         assert data == {"foo": "bar", "baz": None}
 
-    def test_request_extra_headers(self, client: Spec) -> None:
+    def test_request_extra_headers(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1366,7 +1386,7 @@ class TestAsyncSpec:
         )
         assert request.headers.get("X-Bar") == "false"
 
-    def test_request_extra_query(self, client: Spec) -> None:
+    def test_request_extra_query(self, client: Vibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1407,7 +1427,7 @@ class TestAsyncSpec:
         params = dict(request.url.params)
         assert params == {"foo": "2"}
 
-    def test_multipart_repeating_array(self, async_client: AsyncSpec) -> None:
+    def test_multipart_repeating_array(self, async_client: AsyncVibedropper) -> None:
         request = async_client._build_request(
             FinalRequestOptions.construct(
                 method="post",
@@ -1437,7 +1457,7 @@ class TestAsyncSpec:
         ]
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_binary_content_upload(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_binary_content_upload(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         respx_mock.post("/upload").mock(side_effect=mirror_request_content)
 
         file_content = b"Hello, this is a test file."
@@ -1462,7 +1482,7 @@ class TestAsyncSpec:
             assert counter.value == 0, "the request body should not have been read"
             return httpx.Response(200, content=await request.aread())
 
-        async with AsyncSpec(
+        async with AsyncVibedropper(
             base_url=base_url,
             api_key=api_key,
             _strict_response_validation=True,
@@ -1482,7 +1502,7 @@ class TestAsyncSpec:
 
     @pytest.mark.respx(base_url=base_url)
     async def test_binary_content_upload_with_body_is_deprecated(
-        self, respx_mock: MockRouter, async_client: AsyncSpec
+        self, respx_mock: MockRouter, async_client: AsyncVibedropper
     ) -> None:
         respx_mock.post("/upload").mock(side_effect=mirror_request_content)
 
@@ -1503,7 +1523,7 @@ class TestAsyncSpec:
         assert response.content == file_content
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_basic_union_response(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_basic_union_response(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         class Model1(BaseModel):
             name: str
 
@@ -1517,7 +1537,7 @@ class TestAsyncSpec:
         assert response.foo == "bar"
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_union_response_different_types(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_union_response_different_types(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         """Union of objects with the same field name using a different type"""
 
         class Model1(BaseModel):
@@ -1540,7 +1560,7 @@ class TestAsyncSpec:
 
     @pytest.mark.respx(base_url=base_url)
     async def test_non_application_json_content_type_for_json_data(
-        self, respx_mock: MockRouter, async_client: AsyncSpec
+        self, respx_mock: MockRouter, async_client: AsyncVibedropper
     ) -> None:
         """
         Response that sets Content-Type to something other than application/json but returns json data
@@ -1562,7 +1582,9 @@ class TestAsyncSpec:
         assert response.foo == 2
 
     async def test_base_url_setter(self) -> None:
-        client = AsyncSpec(base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True)
+        client = AsyncVibedropper(
+            base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True
+        )
         assert client.base_url == "https://example.com/from_init/"
 
         client.base_url = "https://example.com/from_setter"  # type: ignore[assignment]
@@ -1572,15 +1594,17 @@ class TestAsyncSpec:
         await client.close()
 
     async def test_base_url_env(self) -> None:
-        with update_env(SPEC_BASE_URL="http://localhost:5000/from/env"):
-            client = AsyncSpec(api_key=api_key, _strict_response_validation=True)
+        with update_env(VIBEDROPPER_BASE_URL="http://localhost:5000/from/env"):
+            client = AsyncVibedropper(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
-            AsyncSpec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            AsyncSpec(
+            AsyncVibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            AsyncVibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -1589,7 +1613,7 @@ class TestAsyncSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    async def test_base_url_trailing_slash(self, client: AsyncSpec) -> None:
+    async def test_base_url_trailing_slash(self, client: AsyncVibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1603,8 +1627,10 @@ class TestAsyncSpec:
     @pytest.mark.parametrize(
         "client",
         [
-            AsyncSpec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            AsyncSpec(
+            AsyncVibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            AsyncVibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -1613,7 +1639,7 @@ class TestAsyncSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    async def test_base_url_no_trailing_slash(self, client: AsyncSpec) -> None:
+    async def test_base_url_no_trailing_slash(self, client: AsyncVibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1627,8 +1653,10 @@ class TestAsyncSpec:
     @pytest.mark.parametrize(
         "client",
         [
-            AsyncSpec(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
-            AsyncSpec(
+            AsyncVibedropper(
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+            ),
+            AsyncVibedropper(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
                 _strict_response_validation=True,
@@ -1637,7 +1665,7 @@ class TestAsyncSpec:
         ],
         ids=["standard", "custom http client"],
     )
-    async def test_absolute_request_url(self, client: AsyncSpec) -> None:
+    async def test_absolute_request_url(self, client: AsyncVibedropper) -> None:
         request = client._build_request(
             FinalRequestOptions(
                 method="post",
@@ -1649,7 +1677,7 @@ class TestAsyncSpec:
         await client.close()
 
     async def test_copied_client_does_not_close_http(self) -> None:
-        test_client = AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = AsyncVibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         assert not test_client.is_closed()
 
         copied = test_client.copy()
@@ -1661,7 +1689,7 @@ class TestAsyncSpec:
         assert not test_client.is_closed()
 
     async def test_client_context_manager(self) -> None:
-        test_client = AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = AsyncVibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         async with test_client as c2:
             assert c2 is test_client
             assert not c2.is_closed()
@@ -1669,7 +1697,9 @@ class TestAsyncSpec:
         assert test_client.is_closed()
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_client_response_validation_error(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_client_response_validation_error(
+        self, respx_mock: MockRouter, async_client: AsyncVibedropper
+    ) -> None:
         class Model(BaseModel):
             foo: str
 
@@ -1682,7 +1712,9 @@ class TestAsyncSpec:
 
     async def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
-            AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None))
+            AsyncVibedropper(
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None)
+            )
 
     @pytest.mark.respx(base_url=base_url)
     async def test_received_text_for_expected_json(self, respx_mock: MockRouter) -> None:
@@ -1691,12 +1723,12 @@ class TestAsyncSpec:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        strict_client = AsyncVibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         with pytest.raises(APIResponseValidationError):
             await strict_client.get("/foo", cast_to=Model)
 
-        non_strict_client = AsyncSpec(base_url=base_url, api_key=api_key, _strict_response_validation=False)
+        non_strict_client = AsyncVibedropper(base_url=base_url, api_key=api_key, _strict_response_validation=False)
 
         response = await non_strict_client.get("/foo", cast_to=Model)
         assert isinstance(response, str)  # type: ignore[unreachable]
@@ -1727,39 +1759,43 @@ class TestAsyncSpec:
     )
     @mock.patch("time.time", mock.MagicMock(return_value=1696004797))
     async def test_parse_retry_after_header(
-        self, remaining_retries: int, retry_after: str, timeout: float, async_client: AsyncSpec
+        self, remaining_retries: int, retry_after: str, timeout: float, async_client: AsyncVibedropper
     ) -> None:
         headers = httpx.Headers({"retry-after": retry_after})
         options = FinalRequestOptions(method="get", url="/foo", max_retries=3)
         calculated = async_client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
-        respx_mock.get("/store/inventory").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+    async def test_retrying_timeout_errors_doesnt_leak(
+        self, respx_mock: MockRouter, async_client: AsyncVibedropper
+    ) -> None:
+        respx_mock.get("/lists").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            await async_client.store.with_streaming_response.list_inventory().__aenter__()
+            await async_client.lists.with_streaming_response.list().__aenter__()
 
         assert _get_open_connections(async_client) == 0
 
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
-        respx_mock.get("/store/inventory").mock(return_value=httpx.Response(500))
+    async def test_retrying_status_errors_doesnt_leak(
+        self, respx_mock: MockRouter, async_client: AsyncVibedropper
+    ) -> None:
+        respx_mock.get("/lists").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            await async_client.store.with_streaming_response.list_inventory().__aenter__()
+            await async_client.lists.with_streaming_response.list().__aenter__()
         assert _get_open_connections(async_client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     async def test_retries_taken(
         self,
-        async_client: AsyncSpec,
+        async_client: AsyncVibedropper,
         failures_before_success: int,
         failure_mode: Literal["status", "exception"],
         respx_mock: MockRouter,
@@ -1777,18 +1813,18 @@ class TestAsyncSpec:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
 
-        response = await client.store.with_raw_response.list_inventory()
+        response = await client.lists.with_raw_response.list()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_omit_retry_count_header(
-        self, async_client: AsyncSpec, failures_before_success: int, respx_mock: MockRouter
+        self, async_client: AsyncVibedropper, failures_before_success: int, respx_mock: MockRouter
     ) -> None:
         client = async_client.with_options(max_retries=4)
 
@@ -1801,19 +1837,17 @@ class TestAsyncSpec:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
 
-        response = await client.store.with_raw_response.list_inventory(
-            extra_headers={"x-stainless-retry-count": Omit()}
-        )
+        response = await client.lists.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("spec._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("vibedropper._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_overwrite_retry_count_header(
-        self, async_client: AsyncSpec, failures_before_success: int, respx_mock: MockRouter
+        self, async_client: AsyncVibedropper, failures_before_success: int, respx_mock: MockRouter
     ) -> None:
         client = async_client.with_options(max_retries=4)
 
@@ -1826,9 +1860,9 @@ class TestAsyncSpec:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/store/inventory").mock(side_effect=retry_handler)
+        respx_mock.get("/lists").mock(side_effect=retry_handler)
 
-        response = await client.store.with_raw_response.list_inventory(extra_headers={"x-stainless-retry-count": "42"})
+        response = await client.lists.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
@@ -1867,7 +1901,7 @@ class TestAsyncSpec:
         )
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_follow_redirects(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_follow_redirects(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         # Test that the default follow_redirects=True allows following redirects
         respx_mock.post("/redirect").mock(
             return_value=httpx.Response(302, headers={"Location": f"{base_url}/redirected"})
@@ -1879,7 +1913,7 @@ class TestAsyncSpec:
         assert response.json() == {"status": "ok"}
 
     @pytest.mark.respx(base_url=base_url)
-    async def test_follow_redirects_disabled(self, respx_mock: MockRouter, async_client: AsyncSpec) -> None:
+    async def test_follow_redirects_disabled(self, respx_mock: MockRouter, async_client: AsyncVibedropper) -> None:
         # Test that follow_redirects=False prevents following redirects
         respx_mock.post("/redirect").mock(
             return_value=httpx.Response(302, headers={"Location": f"{base_url}/redirected"})

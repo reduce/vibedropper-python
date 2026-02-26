@@ -1,9 +1,9 @@
-# Spec Python API library
+# Vibedropper Python API library
 
 <!-- prettier-ignore -->
-[![PyPI version](https://img.shields.io/pypi/v/spec.svg?label=pypi%20(stable))](https://pypi.org/project/spec/)
+[![PyPI version](https://img.shields.io/pypi/v/vibedropper.svg?label=pypi%20(stable))](https://pypi.org/project/vibedropper/)
 
-The Spec Python library provides convenient access to the Spec REST API from any Python 3.9+
+The Vibedropper Python library provides convenient access to the Vibedropper REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
@@ -16,12 +16,12 @@ The full API of this library can be found in [api.md](api.md).
 ## Installation
 
 ```sh
-# install from this staging repo
-pip install git+ssh://git@github.com/stainless-sdks/spec-python.git
+# install from the production repo
+pip install git+ssh://git@github.com/reduce/vibedropper-python.git
 ```
 
 > [!NOTE]
-> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install spec`
+> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install vibedropper`
 
 ## Usage
 
@@ -29,46 +29,38 @@ The full API of this library can be found in [api.md](api.md).
 
 ```python
 import os
-from spec import Spec
+from vibedropper import Vibedropper
 
-client = Spec(
-    api_key=os.environ.get("PETSTORE_API_KEY"),  # This is the default and can be omitted
+client = Vibedropper(
+    api_key=os.environ.get("VIBEDROPPER_API_KEY"),  # This is the default and can be omitted
 )
 
-order = client.store.orders.create(
-    pet_id=1,
-    quantity=1,
-    status="placed",
-)
-print(order.id)
+lists = client.lists.list()
+print(lists.lists)
 ```
 
 While you can provide an `api_key` keyword argument,
 we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
-to add `PETSTORE_API_KEY="My API Key"` to your `.env` file
+to add `VIBEDROPPER_API_KEY="My API Key"` to your `.env` file
 so that your API Key is not stored in source control.
 
 ## Async usage
 
-Simply import `AsyncSpec` instead of `Spec` and use `await` with each API call:
+Simply import `AsyncVibedropper` instead of `Vibedropper` and use `await` with each API call:
 
 ```python
 import os
 import asyncio
-from spec import AsyncSpec
+from vibedropper import AsyncVibedropper
 
-client = AsyncSpec(
-    api_key=os.environ.get("PETSTORE_API_KEY"),  # This is the default and can be omitted
+client = AsyncVibedropper(
+    api_key=os.environ.get("VIBEDROPPER_API_KEY"),  # This is the default and can be omitted
 )
 
 
 async def main() -> None:
-    order = await client.store.orders.create(
-        pet_id=1,
-        quantity=1,
-        status="placed",
-    )
-    print(order.id)
+    lists = await client.lists.list()
+    print(lists.lists)
 
 
 asyncio.run(main())
@@ -83,8 +75,8 @@ By default, the async client uses `httpx` for HTTP requests. However, for improv
 You can enable this by installing `aiohttp`:
 
 ```sh
-# install from this staging repo
-pip install 'spec[aiohttp] @ git+ssh://git@github.com/stainless-sdks/spec-python.git'
+# install from the production repo
+pip install 'vibedropper[aiohttp] @ git+ssh://git@github.com/reduce/vibedropper-python.git'
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
@@ -92,21 +84,17 @@ Then you can enable it by instantiating the client with `http_client=DefaultAioH
 ```python
 import os
 import asyncio
-from spec import DefaultAioHttpClient
-from spec import AsyncSpec
+from vibedropper import DefaultAioHttpClient
+from vibedropper import AsyncVibedropper
 
 
 async def main() -> None:
-    async with AsyncSpec(
-        api_key=os.environ.get("PETSTORE_API_KEY"),  # This is the default and can be omitted
+    async with AsyncVibedropper(
+        api_key=os.environ.get("VIBEDROPPER_API_KEY"),  # This is the default and can be omitted
         http_client=DefaultAioHttpClient(),
     ) as client:
-        order = await client.store.orders.create(
-            pet_id=1,
-            quantity=1,
-            status="placed",
-        )
-        print(order.id)
+        lists = await client.lists.list()
+        print(lists.lists)
 
 
 asyncio.run(main())
@@ -121,46 +109,29 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
 
-## Nested params
-
-Nested parameters are dictionaries, typed using `TypedDict`, for example:
-
-```python
-from spec import Spec
-
-client = Spec()
-
-pet = client.pets.create(
-    name="doggie",
-    photo_urls=["string"],
-    category={},
-)
-print(pet.category)
-```
-
 ## Handling errors
 
-When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `spec.APIConnectionError` is raised.
+When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `vibedropper.APIConnectionError` is raised.
 
 When the API returns a non-success status code (that is, 4xx or 5xx
-response), a subclass of `spec.APIStatusError` is raised, containing `status_code` and `response` properties.
+response), a subclass of `vibedropper.APIStatusError` is raised, containing `status_code` and `response` properties.
 
-All errors inherit from `spec.APIError`.
+All errors inherit from `vibedropper.APIError`.
 
 ```python
-import spec
-from spec import Spec
+import vibedropper
+from vibedropper import Vibedropper
 
-client = Spec()
+client = Vibedropper()
 
 try:
-    client.store.list_inventory()
-except spec.APIConnectionError as e:
+    client.lists.list()
+except vibedropper.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
-except spec.RateLimitError as e:
+except vibedropper.RateLimitError as e:
     print("A 429 status code was received; we should back off a bit.")
-except spec.APIStatusError as e:
+except vibedropper.APIStatusError as e:
     print("Another non-200-range status code was received")
     print(e.status_code)
     print(e.response)
@@ -188,16 +159,16 @@ Connection errors (for example, due to a network connectivity problem), 408 Requ
 You can use the `max_retries` option to configure or disable retry settings:
 
 ```python
-from spec import Spec
+from vibedropper import Vibedropper
 
 # Configure the default for all requests:
-client = Spec(
+client = Vibedropper(
     # default is 2
     max_retries=0,
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).store.list_inventory()
+client.with_options(max_retries=5).lists.list()
 ```
 
 ### Timeouts
@@ -206,21 +177,21 @@ By default requests time out after 1 minute. You can configure this with a `time
 which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
 ```python
-from spec import Spec
+from vibedropper import Vibedropper
 
 # Configure the default for all requests:
-client = Spec(
+client = Vibedropper(
     # 20 seconds (default is 1 minute)
     timeout=20.0,
 )
 
 # More granular control:
-client = Spec(
+client = Vibedropper(
     timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).store.list_inventory()
+client.with_options(timeout=5.0).lists.list()
 ```
 
 On timeout, an `APITimeoutError` is thrown.
@@ -233,10 +204,10 @@ Note that requests that time out are [retried twice by default](#retries).
 
 We use the standard library [`logging`](https://docs.python.org/3/library/logging.html) module.
 
-You can enable logging by setting the environment variable `SPEC_LOG` to `info`.
+You can enable logging by setting the environment variable `VIBEDROPPER_LOG` to `info`.
 
 ```shell
-$ export SPEC_LOG=info
+$ export VIBEDROPPER_LOG=info
 ```
 
 Or to `debug` for more verbose logging.
@@ -258,19 +229,19 @@ if response.my_field is None:
 The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
 
 ```py
-from spec import Spec
+from vibedropper import Vibedropper
 
-client = Spec()
-response = client.store.with_raw_response.list_inventory()
+client = Vibedropper()
+response = client.lists.with_raw_response.list()
 print(response.headers.get('X-My-Header'))
 
-store = response.parse()  # get the object that `store.list_inventory()` would have returned
-print(store)
+list_ = response.parse()  # get the object that `lists.list()` would have returned
+print(list_.lists)
 ```
 
-These methods return an [`APIResponse`](https://github.com/stainless-sdks/spec-python/tree/main/src/spec/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/reduce/vibedropper-python/tree/main/src/vibedropper/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/spec-python/tree/main/src/spec/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/reduce/vibedropper-python/tree/main/src/vibedropper/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -279,7 +250,7 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.store.with_streaming_response.list_inventory() as response:
+with client.lists.with_streaming_response.list() as response:
     print(response.headers.get("X-My-Header"))
 
     for line in response.iter_lines():
@@ -332,10 +303,10 @@ You can directly override the [httpx client](https://www.python-httpx.org/api/#c
 
 ```python
 import httpx
-from spec import Spec, DefaultHttpxClient
+from vibedropper import Vibedropper, DefaultHttpxClient
 
-client = Spec(
-    # Or use the `SPEC_BASE_URL` env var
+client = Vibedropper(
+    # Or use the `VIBEDROPPER_BASE_URL` env var
     base_url="http://my.test.server.example.com:8083",
     http_client=DefaultHttpxClient(
         proxy="http://my.test.proxy.example.com",
@@ -355,9 +326,9 @@ client.with_options(http_client=DefaultHttpxClient(...))
 By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
 
 ```py
-from spec import Spec
+from vibedropper import Vibedropper
 
-with Spec() as client:
+with Vibedropper() as client:
   # make requests here
   ...
 
@@ -374,7 +345,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/spec-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/reduce/vibedropper-python/issues) with questions, bugs, or suggestions.
 
 ### Determining the installed version
 
@@ -383,8 +354,8 @@ If you've upgraded to the latest version but aren't seeing any new features you 
 You can determine the version that is being used at runtime with:
 
 ```py
-import spec
-print(spec.__version__)
+import vibedropper
+print(vibedropper.__version__)
 ```
 
 ## Requirements

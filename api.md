@@ -1,68 +1,63 @@
-# Shared Types
-
-```python
-from spec.types import Order
-```
-
-# Pets
+# Lists
 
 Types:
 
 ```python
-from spec.types import (
-    Category,
-    Pet,
-    PetFindByStatusResponse,
-    PetFindByTagsResponse,
-    PetUploadImageResponse,
+from vibedropper.types import List, ListRetrieveResponse, ListListResponse
+```
+
+Methods:
+
+- <code title="get /lists/{listId}">client.lists.<a href="./src/vibedropper/resources/lists/lists.py">retrieve</a>(list_id) -> <a href="./src/vibedropper/types/list_retrieve_response.py">ListRetrieveResponse</a></code>
+- <code title="get /lists">client.lists.<a href="./src/vibedropper/resources/lists/lists.py">list</a>(\*\*<a href="src/vibedropper/types/list_list_params.py">params</a>) -> <a href="./src/vibedropper/types/list_list_response.py">ListListResponse</a></code>
+
+## Subscribers
+
+Types:
+
+```python
+from vibedropper.types.lists import (
+    Subscriber,
+    SubscriberListResponse,
+    SubscriberAddResponse,
+    SubscriberRemoveResponse,
 )
 ```
 
 Methods:
 
-- <code title="post /pet">client.pets.<a href="./src/spec/resources/pets.py">create</a>(\*\*<a href="src/spec/types/pet_create_params.py">params</a>) -> <a href="./src/spec/types/pet.py">Pet</a></code>
-- <code title="get /pet/{petId}">client.pets.<a href="./src/spec/resources/pets.py">retrieve</a>(pet_id) -> <a href="./src/spec/types/pet.py">Pet</a></code>
-- <code title="put /pet">client.pets.<a href="./src/spec/resources/pets.py">update</a>(\*\*<a href="src/spec/types/pet_update_params.py">params</a>) -> <a href="./src/spec/types/pet.py">Pet</a></code>
-- <code title="delete /pet/{petId}">client.pets.<a href="./src/spec/resources/pets.py">delete</a>(pet_id) -> None</code>
-- <code title="get /pet/findByStatus">client.pets.<a href="./src/spec/resources/pets.py">find_by_status</a>(\*\*<a href="src/spec/types/pet_find_by_status_params.py">params</a>) -> <a href="./src/spec/types/pet_find_by_status_response.py">PetFindByStatusResponse</a></code>
-- <code title="get /pet/findByTags">client.pets.<a href="./src/spec/resources/pets.py">find_by_tags</a>(\*\*<a href="src/spec/types/pet_find_by_tags_params.py">params</a>) -> <a href="./src/spec/types/pet_find_by_tags_response.py">PetFindByTagsResponse</a></code>
-- <code title="post /pet/{petId}">client.pets.<a href="./src/spec/resources/pets.py">update_by_id</a>(pet_id, \*\*<a href="src/spec/types/pet_update_by_id_params.py">params</a>) -> None</code>
-- <code title="post /pet/{petId}/uploadImage">client.pets.<a href="./src/spec/resources/pets.py">upload_image</a>(pet_id, image, \*\*<a href="src/spec/types/pet_upload_image_params.py">params</a>) -> <a href="./src/spec/types/pet_upload_image_response.py">PetUploadImageResponse</a></code>
+- <code title="get /lists/{listId}/subscribers">client.lists.subscribers.<a href="./src/vibedropper/resources/lists/subscribers.py">list</a>(list_id) -> <a href="./src/vibedropper/types/lists/subscriber_list_response.py">SubscriberListResponse</a></code>
+- <code title="post /lists/{listId}/subscribers">client.lists.subscribers.<a href="./src/vibedropper/resources/lists/subscribers.py">add</a>(list_id, \*\*<a href="src/vibedropper/types/lists/subscriber_add_params.py">params</a>) -> <a href="./src/vibedropper/types/lists/subscriber_add_response.py">SubscriberAddResponse</a></code>
+- <code title="delete /lists/{listId}/subscribers/{subscriberId}">client.lists.subscribers.<a href="./src/vibedropper/resources/lists/subscribers.py">remove</a>(subscriber_id, \*, list_id) -> <a href="./src/vibedropper/types/lists/subscriber_remove_response.py">SubscriberRemoveResponse</a></code>
 
-# Store
+# Customers
 
 Types:
 
 ```python
-from spec.types import StoreListInventoryResponse
+from vibedropper.types import (
+    Customer,
+    CustomerRetrieveResponse,
+    CustomerUpdateResponse,
+    CustomerListResponse,
+)
 ```
 
 Methods:
 
-- <code title="get /store/inventory">client.store.<a href="./src/spec/resources/store/store.py">list_inventory</a>() -> <a href="./src/spec/types/store_list_inventory_response.py">StoreListInventoryResponse</a></code>
+- <code title="get /customers/{customerId}">client.customers.<a href="./src/vibedropper/resources/customers.py">retrieve</a>(customer_id) -> <a href="./src/vibedropper/types/customer_retrieve_response.py">CustomerRetrieveResponse</a></code>
+- <code title="patch /customers/{customerId}">client.customers.<a href="./src/vibedropper/resources/customers.py">update</a>(customer_id, \*\*<a href="src/vibedropper/types/customer_update_params.py">params</a>) -> <a href="./src/vibedropper/types/customer_update_response.py">CustomerUpdateResponse</a></code>
+- <code title="get /customers">client.customers.<a href="./src/vibedropper/resources/customers.py">list</a>(\*\*<a href="src/vibedropper/types/customer_list_params.py">params</a>) -> <a href="./src/vibedropper/types/customer_list_response.py">CustomerListResponse</a></code>
 
-## Orders
-
-Methods:
-
-- <code title="post /store/order">client.store.orders.<a href="./src/spec/resources/store/orders.py">create</a>(\*\*<a href="src/spec/types/store/order_create_params.py">params</a>) -> <a href="./src/spec/types/shared/order.py">Order</a></code>
-- <code title="get /store/order/{orderId}">client.store.orders.<a href="./src/spec/resources/store/orders.py">retrieve</a>(order_id) -> <a href="./src/spec/types/shared/order.py">Order</a></code>
-- <code title="delete /store/order/{orderId}">client.store.orders.<a href="./src/spec/resources/store/orders.py">delete</a>(order_id) -> None</code>
-
-# Users
+# Campaigns
 
 Types:
 
 ```python
-from spec.types import User, UserLoginResponse
+from vibedropper.types import Campaign, CampaignRetrieveResponse, CampaignListResponse
 ```
 
 Methods:
 
-- <code title="post /user">client.users.<a href="./src/spec/resources/users.py">create</a>(\*\*<a href="src/spec/types/user_create_params.py">params</a>) -> <a href="./src/spec/types/user.py">User</a></code>
-- <code title="get /user/{username}">client.users.<a href="./src/spec/resources/users.py">retrieve</a>(username) -> <a href="./src/spec/types/user.py">User</a></code>
-- <code title="put /user/{username}">client.users.<a href="./src/spec/resources/users.py">update</a>(existing_username, \*\*<a href="src/spec/types/user_update_params.py">params</a>) -> None</code>
-- <code title="delete /user/{username}">client.users.<a href="./src/spec/resources/users.py">delete</a>(username) -> None</code>
-- <code title="post /user/createWithList">client.users.<a href="./src/spec/resources/users.py">create_with_list</a>(\*\*<a href="src/spec/types/user_create_with_list_params.py">params</a>) -> <a href="./src/spec/types/user.py">User</a></code>
-- <code title="get /user/login">client.users.<a href="./src/spec/resources/users.py">login</a>(\*\*<a href="src/spec/types/user_login_params.py">params</a>) -> str</code>
-- <code title="get /user/logout">client.users.<a href="./src/spec/resources/users.py">logout</a>() -> None</code>
+- <code title="get /campaigns/{campaignId}">client.campaigns.<a href="./src/vibedropper/resources/campaigns.py">retrieve</a>(campaign_id) -> <a href="./src/vibedropper/types/campaign_retrieve_response.py">CampaignRetrieveResponse</a></code>
+- <code title="get /campaigns">client.campaigns.<a href="./src/vibedropper/resources/campaigns.py">list</a>() -> <a href="./src/vibedropper/types/campaign_list_response.py">CampaignListResponse</a></code>

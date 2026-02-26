@@ -8,8 +8,8 @@ from typing import Any, TypeVar, Iterator, Sequence, cast
 from datetime import date, datetime
 from typing_extensions import Literal, get_args, get_origin, assert_type
 
-from spec._types import Omit, NoneType
-from spec._utils import (
+from vibedropper._types import Omit, NoneType
+from vibedropper._utils import (
     is_dict,
     is_list,
     is_list_type,
@@ -19,8 +19,8 @@ from spec._utils import (
     is_annotated_type,
     is_type_alias_type,
 )
-from spec._compat import PYDANTIC_V1, field_outer_type, get_model_fields
-from spec._models import BaseModel
+from vibedropper._compat import PYDANTIC_V1, field_outer_type, get_model_fields
+from vibedropper._models import BaseModel
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 

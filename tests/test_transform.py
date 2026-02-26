@@ -8,15 +8,15 @@ from typing_extensions import Required, Annotated, TypedDict
 
 import pytest
 
-from spec._types import Base64FileInput, omit, not_given
-from spec._utils import (
+from vibedropper._types import Base64FileInput, omit, not_given
+from vibedropper._utils import (
     PropertyInfo,
     transform as _transform,
     parse_datetime,
     async_transform as _async_transform,
 )
-from spec._compat import PYDANTIC_V1
-from spec._models import BaseModel
+from vibedropper._compat import PYDANTIC_V1
+from vibedropper._models import BaseModel
 
 _T = TypeVar("_T")
 
