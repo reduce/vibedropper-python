@@ -5,8 +5,8 @@ from typing import Union
 
 import pydantic
 
-from spec import _compat
-from spec._utils._json import openapi_dumps
+from vibedropper import _compat
+from vibedropper._utils._json import openapi_dumps
 
 
 class TestOpenapiDumps:

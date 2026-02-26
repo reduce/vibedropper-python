@@ -7,9 +7,9 @@ import pytest
 import pydantic
 from pydantic import Field
 
-from spec._utils import PropertyInfo
-from spec._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
-from spec._models import DISCRIMINATOR_CACHE, BaseModel, construct_type
+from vibedropper._utils import PropertyInfo
+from vibedropper._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
+from vibedropper._models import DISCRIMINATOR_CACHE, BaseModel, construct_type
 
 
 class BasicModel(BaseModel):

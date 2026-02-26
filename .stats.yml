@@ -1,4 +1,4 @@
-configured_endpoints: 19
-openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/sudo-reduce%2Fspec-21652c2d2e6a5aab678ca435ba09ef698ff34270021f349660b84d5d98bf3923.yml
-openapi_spec_hash: 356a7298b2abac3fdf72ad5ee046b952
-config_hash: 57b4527f0507e8599781af27f02c9a50
+configured_endpoints: 10
+openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/sudo-reduce%2Fvibedropper-b6c58be50f01671f9400d847cb1dbf7dbec8dbd1c385bb116bda93fc6339859d.yml
+openapi_spec_hash: 5d6f269b57b4918f478f7deead992715
+config_hash: 05f6274f23916d338ddb2bdf4487488f
