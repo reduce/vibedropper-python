@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-02-28)
+
+Full Changelog: [v0.2.0...v0.2.1](https://github.com/reduce/vibedropper-python/compare/v0.2.0...v0.2.1)
+
+### Chores
+
+* update SDK settings ([7cdda33](https://github.com/reduce/vibedropper-python/commit/7cdda33dae3b71cc81c721b8a3fba44278bd5585))
+
 ## 0.2.0 (2026-02-28)
 
 Full Changelog: [v0.1.1...v0.2.0](https://github.com/reduce/vibedropper-python/compare/v0.1.1...v0.2.0)
