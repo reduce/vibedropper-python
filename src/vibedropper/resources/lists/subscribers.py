@@ -93,7 +93,7 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber
+        Add subscriber to list
 
         Args:
           extra_headers: Send extra headers
@@ -137,7 +137,7 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber
+        Remove subscriber from list
 
         Args:
           extra_headers: Send extra headers
@@ -231,7 +231,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber
+        Add subscriber to list
 
         Args:
           extra_headers: Send extra headers
@@ -275,7 +275,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber
+        Remove subscriber from list
 
         Args:
           extra_headers: Send extra headers

@@ -82,9 +82,17 @@ class CustomersResource(SyncAPIResource):
         self,
         customer_id: str,
         *,
+        address_line1: Optional[str] | Omit = omit,
+        address_line2: Optional[str] | Omit = omit,
+        city: Optional[str] | Omit = omit,
+        country: Optional[str] | Omit = omit,
+        first_name: Optional[str] | Omit = omit,
+        last_name: Optional[str] | Omit = omit,
         name: str | Omit = omit,
         pickup_location_id: Optional[str] | Omit = omit,
+        postal_code: Optional[str] | Omit = omit,
         region_id: Optional[str] | Omit = omit,
+        state: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -110,9 +118,17 @@ class CustomersResource(SyncAPIResource):
             f"/customers/{customer_id}",
             body=maybe_transform(
                 {
+                    "address_line1": address_line1,
+                    "address_line2": address_line2,
+                    "city": city,
+                    "country": country,
+                    "first_name": first_name,
+                    "last_name": last_name,
                     "name": name,
                     "pickup_location_id": pickup_location_id,
+                    "postal_code": postal_code,
                     "region_id": region_id,
+                    "state": state,
                 },
                 customer_update_params.CustomerUpdateParams,
             ),
@@ -139,6 +155,8 @@ class CustomersResource(SyncAPIResource):
         List customers
 
         Args:
+          search: Search by name or email
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -224,9 +242,17 @@ class AsyncCustomersResource(AsyncAPIResource):
         self,
         customer_id: str,
         *,
+        address_line1: Optional[str] | Omit = omit,
+        address_line2: Optional[str] | Omit = omit,
+        city: Optional[str] | Omit = omit,
+        country: Optional[str] | Omit = omit,
+        first_name: Optional[str] | Omit = omit,
+        last_name: Optional[str] | Omit = omit,
         name: str | Omit = omit,
         pickup_location_id: Optional[str] | Omit = omit,
+        postal_code: Optional[str] | Omit = omit,
         region_id: Optional[str] | Omit = omit,
+        state: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -252,9 +278,17 @@ class AsyncCustomersResource(AsyncAPIResource):
             f"/customers/{customer_id}",
             body=await async_maybe_transform(
                 {
+                    "address_line1": address_line1,
+                    "address_line2": address_line2,
+                    "city": city,
+                    "country": country,
+                    "first_name": first_name,
+                    "last_name": last_name,
                     "name": name,
                     "pickup_location_id": pickup_location_id,
+                    "postal_code": postal_code,
                     "region_id": region_id,
+                    "state": state,
                 },
                 customer_update_params.CustomerUpdateParams,
             ),
@@ -281,6 +315,8 @@ class AsyncCustomersResource(AsyncAPIResource):
         List customers
 
         Args:
+          search: Search by name or email
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request

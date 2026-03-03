@@ -76,9 +76,17 @@ class TestCustomers:
     def test_method_update_with_all_params(self, client: Vibedropper) -> None:
         customer = client.customers.update(
             customer_id="customerId",
+            address_line1="addressLine1",
+            address_line2="addressLine2",
+            city="city",
+            country="country",
+            first_name="firstName",
+            last_name="lastName",
             name="name",
             pickup_location_id="pickupLocationId",
+            postal_code="postalCode",
             region_id="regionId",
+            state="state",
         )
         assert_matches_type(CustomerUpdateResponse, customer, path=["response"])
 
@@ -126,7 +134,7 @@ class TestCustomers:
     @parametrize
     def test_method_list_with_all_params(self, client: Vibedropper) -> None:
         customer = client.customers.list(
-            limit=0,
+            limit=100,
             page=0,
             search="search",
         )
@@ -215,9 +223,17 @@ class TestAsyncCustomers:
     async def test_method_update_with_all_params(self, async_client: AsyncVibedropper) -> None:
         customer = await async_client.customers.update(
             customer_id="customerId",
+            address_line1="addressLine1",
+            address_line2="addressLine2",
+            city="city",
+            country="country",
+            first_name="firstName",
+            last_name="lastName",
             name="name",
             pickup_location_id="pickupLocationId",
+            postal_code="postalCode",
             region_id="regionId",
+            state="state",
         )
         assert_matches_type(CustomerUpdateResponse, customer, path=["response"])
 
@@ -265,7 +281,7 @@ class TestAsyncCustomers:
     @parametrize
     async def test_method_list_with_all_params(self, async_client: AsyncVibedropper) -> None:
         customer = await async_client.customers.list(
-            limit=0,
+            limit=100,
             page=0,
             search="search",
         )
