@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2026-03-03)
+
+Full Changelog: [v0.2.1...v0.3.0](https://github.com/reduce/vibedropper-python/compare/v0.2.1...v0.3.0)
+
+### Features
+
+* **api:** api update ([955e794](https://github.com/reduce/vibedropper-python/commit/955e79491bccf30ccc5ae155fd85786fa233c959))
+
 ## 0.2.1 (2026-02-28)
 
 Full Changelog: [v0.2.0...v0.2.1](https://github.com/reduce/vibedropper-python/compare/v0.2.0...v0.2.1)

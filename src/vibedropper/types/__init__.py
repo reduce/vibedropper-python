@@ -7,6 +7,7 @@ from .campaign import Campaign as Campaign
 from .customer import Customer as Customer
 from .list_list_params import ListListParams as ListListParams
 from .list_list_response import ListListResponse as ListListResponse
+from .campaign_list_params import CampaignListParams as CampaignListParams
 from .customer_list_params import CustomerListParams as CustomerListParams
 from .campaign_list_response import CampaignListResponse as CampaignListResponse
 from .customer_list_response import CustomerListResponse as CustomerListResponse
