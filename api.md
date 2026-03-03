@@ -60,4 +60,4 @@ from vibedropper.types import Campaign, CampaignRetrieveResponse, CampaignListRe
 Methods:
 
 - <code title="get /campaigns/{campaignId}">client.campaigns.<a href="./src/vibedropper/resources/campaigns.py">retrieve</a>(campaign_id) -> <a href="./src/vibedropper/types/campaign_retrieve_response.py">CampaignRetrieveResponse</a></code>
-- <code title="get /campaigns">client.campaigns.<a href="./src/vibedropper/resources/campaigns.py">list</a>() -> <a href="./src/vibedropper/types/campaign_list_response.py">CampaignListResponse</a></code>
+- <code title="get /campaigns">client.campaigns.<a href="./src/vibedropper/resources/campaigns.py">list</a>(\*\*<a href="src/vibedropper/types/campaign_list_params.py">params</a>) -> <a href="./src/vibedropper/types/campaign_list_response.py">CampaignListResponse</a></code>

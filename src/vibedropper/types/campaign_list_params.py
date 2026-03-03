@@ -4,13 +4,10 @@ from __future__ import annotations
 
 from typing_extensions import TypedDict
 
-__all__ = ["CustomerListParams"]
+__all__ = ["CampaignListParams"]
 
 
-class CustomerListParams(TypedDict, total=False):
+class CampaignListParams(TypedDict, total=False):
     limit: int
 
     page: int
-
-    search: str
-    """Search by name or email"""

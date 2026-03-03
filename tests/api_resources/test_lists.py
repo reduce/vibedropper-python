@@ -69,7 +69,7 @@ class TestLists:
     @parametrize
     def test_method_list_with_all_params(self, client: Vibedropper) -> None:
         list_ = client.lists.list(
-            limit=0,
+            limit=100,
             page=0,
         )
         assert_matches_type(ListListResponse, list_, path=["response"])
@@ -154,7 +154,7 @@ class TestAsyncLists:
     @parametrize
     async def test_method_list_with_all_params(self, async_client: AsyncVibedropper) -> None:
         list_ = await async_client.lists.list(
-            limit=0,
+            limit=100,
             page=0,
         )
         assert_matches_type(ListListResponse, list_, path=["response"])
