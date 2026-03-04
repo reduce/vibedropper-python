@@ -144,7 +144,7 @@ class KnowledgeBasesResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> KnowledgeBaseListResponse:
-        """List knowledge bases"""
+        """Returns all knowledge bases ordered by sortOrder then creation date."""
         return self._get(
             "/knowledge-bases",
             options=make_request_options(
@@ -299,7 +299,7 @@ class AsyncKnowledgeBasesResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> KnowledgeBaseListResponse:
-        """List knowledge bases"""
+        """Returns all knowledge bases ordered by sortOrder then creation date."""
         return await self._get(
             "/knowledge-bases",
             options=make_request_options(

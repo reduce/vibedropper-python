@@ -67,15 +67,6 @@ class TestCampaigns:
 
     @pytest.mark.skip(reason="Mock server tests are disabled")
     @parametrize
-    def test_method_list_with_all_params(self, client: Vibedropper) -> None:
-        campaign = client.campaigns.list(
-            limit=100,
-            page=0,
-        )
-        assert_matches_type(CampaignListResponse, campaign, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
     def test_raw_response_list(self, client: Vibedropper) -> None:
         response = client.campaigns.with_raw_response.list()
 
@@ -148,15 +139,6 @@ class TestAsyncCampaigns:
     @parametrize
     async def test_method_list(self, async_client: AsyncVibedropper) -> None:
         campaign = await async_client.campaigns.list()
-        assert_matches_type(CampaignListResponse, campaign, path=["response"])
-
-    @pytest.mark.skip(reason="Mock server tests are disabled")
-    @parametrize
-    async def test_method_list_with_all_params(self, async_client: AsyncVibedropper) -> None:
-        campaign = await async_client.campaigns.list(
-            limit=100,
-            page=0,
-        )
         assert_matches_type(CampaignListResponse, campaign, path=["response"])
 
     @pytest.mark.skip(reason="Mock server tests are disabled")

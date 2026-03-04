@@ -64,7 +64,7 @@ class ArticlesResource(SyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 
@@ -180,7 +180,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 
