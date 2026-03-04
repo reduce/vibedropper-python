@@ -2,61 +2,70 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 import httpx
 
-from ..types import campaign_list_params
-from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from .._utils import maybe_transform, async_maybe_transform
-from .._compat import cached_property
-from .._resource import SyncAPIResource, AsyncAPIResource
-from .._response import (
+from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
+from ..._utils import maybe_transform, async_maybe_transform
+from ..._compat import cached_property
+from ..._resource import SyncAPIResource, AsyncAPIResource
+from ..._response import (
     to_raw_response_wrapper,
     to_streamed_response_wrapper,
     async_to_raw_response_wrapper,
     async_to_streamed_response_wrapper,
 )
-from .._base_client import make_request_options
-from ..types.campaign_list_response import CampaignListResponse
-from ..types.campaign_retrieve_response import CampaignRetrieveResponse
+from ..._base_client import make_request_options
+from ...types.knowledge_bases import article_list_params, article_create_params
+from ...types.knowledge_bases.article_list_response import ArticleListResponse
+from ...types.knowledge_bases.article_create_response import ArticleCreateResponse
 
-__all__ = ["CampaignsResource", "AsyncCampaignsResource"]
+__all__ = ["ArticlesResource", "AsyncArticlesResource"]
 
 
-class CampaignsResource(SyncAPIResource):
+class ArticlesResource(SyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> CampaignsResourceWithRawResponse:
+    def with_raw_response(self) -> ArticlesResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
         """
-        return CampaignsResourceWithRawResponse(self)
+        return ArticlesResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> CampaignsResourceWithStreamingResponse:
+    def with_streaming_response(self) -> ArticlesResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
         """
-        return CampaignsResourceWithStreamingResponse(self)
+        return ArticlesResourceWithStreamingResponse(self)
 
-    def retrieve(
+    def create(
         self,
-        campaign_id: str,
+        kb_id: str,
         *,
+        title: str,
+        category_id: Optional[str] | Omit = omit,
+        content: str | Omit = omit,
+        excerpt: Optional[str] | Omit = omit,
+        published: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CampaignRetrieveResponse:
+    ) -> ArticleCreateResponse:
         """
-        Get campaign
+        Create an article
 
         Args:
+          content: HTML or markdown content
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -65,18 +74,29 @@ class CampaignsResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not campaign_id:
-            raise ValueError(f"Expected a non-empty value for `campaign_id` but received {campaign_id!r}")
-        return self._get(
-            f"/campaigns/{campaign_id}",
+        if not kb_id:
+            raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
+        return self._post(
+            f"/knowledge-bases/{kb_id}/articles",
+            body=maybe_transform(
+                {
+                    "title": title,
+                    "category_id": category_id,
+                    "content": content,
+                    "excerpt": excerpt,
+                    "published": published,
+                },
+                article_create_params.ArticleCreateParams,
+            ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CampaignRetrieveResponse,
+            cast_to=ArticleCreateResponse,
         )
 
     def list(
         self,
+        kb_id: str,
         *,
         limit: int | Omit = omit,
         page: int | Omit = omit,
@@ -86,9 +106,9 @@ class CampaignsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CampaignListResponse:
+    ) -> ArticleListResponse:
         """
-        List campaigns
+        List articles in a knowledge base
 
         Args:
           extra_headers: Send extra headers
@@ -99,8 +119,10 @@ class CampaignsResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
+        if not kb_id:
+            raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return self._get(
-            "/campaigns",
+            f"/knowledge-bases/{kb_id}/articles",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -111,48 +133,55 @@ class CampaignsResource(SyncAPIResource):
                         "limit": limit,
                         "page": page,
                     },
-                    campaign_list_params.CampaignListParams,
+                    article_list_params.ArticleListParams,
                 ),
             ),
-            cast_to=CampaignListResponse,
+            cast_to=ArticleListResponse,
         )
 
 
-class AsyncCampaignsResource(AsyncAPIResource):
+class AsyncArticlesResource(AsyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> AsyncCampaignsResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncArticlesResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncCampaignsResourceWithRawResponse(self)
+        return AsyncArticlesResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncCampaignsResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncArticlesResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
         """
-        return AsyncCampaignsResourceWithStreamingResponse(self)
+        return AsyncArticlesResourceWithStreamingResponse(self)
 
-    async def retrieve(
+    async def create(
         self,
-        campaign_id: str,
+        kb_id: str,
         *,
+        title: str,
+        category_id: Optional[str] | Omit = omit,
+        content: str | Omit = omit,
+        excerpt: Optional[str] | Omit = omit,
+        published: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CampaignRetrieveResponse:
+    ) -> ArticleCreateResponse:
         """
-        Get campaign
+        Create an article
 
         Args:
+          content: HTML or markdown content
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -161,18 +190,29 @@ class AsyncCampaignsResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not campaign_id:
-            raise ValueError(f"Expected a non-empty value for `campaign_id` but received {campaign_id!r}")
-        return await self._get(
-            f"/campaigns/{campaign_id}",
+        if not kb_id:
+            raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
+        return await self._post(
+            f"/knowledge-bases/{kb_id}/articles",
+            body=await async_maybe_transform(
+                {
+                    "title": title,
+                    "category_id": category_id,
+                    "content": content,
+                    "excerpt": excerpt,
+                    "published": published,
+                },
+                article_create_params.ArticleCreateParams,
+            ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CampaignRetrieveResponse,
+            cast_to=ArticleCreateResponse,
         )
 
     async def list(
         self,
+        kb_id: str,
         *,
         limit: int | Omit = omit,
         page: int | Omit = omit,
@@ -182,9 +222,9 @@ class AsyncCampaignsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CampaignListResponse:
+    ) -> ArticleListResponse:
         """
-        List campaigns
+        List articles in a knowledge base
 
         Args:
           extra_headers: Send extra headers
@@ -195,8 +235,10 @@ class AsyncCampaignsResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
+        if not kb_id:
+            raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return await self._get(
-            "/campaigns",
+            f"/knowledge-bases/{kb_id}/articles",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -207,56 +249,56 @@ class AsyncCampaignsResource(AsyncAPIResource):
                         "limit": limit,
                         "page": page,
                     },
-                    campaign_list_params.CampaignListParams,
+                    article_list_params.ArticleListParams,
                 ),
             ),
-            cast_to=CampaignListResponse,
+            cast_to=ArticleListResponse,
         )
 
 
-class CampaignsResourceWithRawResponse:
-    def __init__(self, campaigns: CampaignsResource) -> None:
-        self._campaigns = campaigns
+class ArticlesResourceWithRawResponse:
+    def __init__(self, articles: ArticlesResource) -> None:
+        self._articles = articles
 
-        self.retrieve = to_raw_response_wrapper(
-            campaigns.retrieve,
+        self.create = to_raw_response_wrapper(
+            articles.create,
         )
         self.list = to_raw_response_wrapper(
-            campaigns.list,
+            articles.list,
         )
 
 
-class AsyncCampaignsResourceWithRawResponse:
-    def __init__(self, campaigns: AsyncCampaignsResource) -> None:
-        self._campaigns = campaigns
+class AsyncArticlesResourceWithRawResponse:
+    def __init__(self, articles: AsyncArticlesResource) -> None:
+        self._articles = articles
 
-        self.retrieve = async_to_raw_response_wrapper(
-            campaigns.retrieve,
+        self.create = async_to_raw_response_wrapper(
+            articles.create,
         )
         self.list = async_to_raw_response_wrapper(
-            campaigns.list,
+            articles.list,
         )
 
 
-class CampaignsResourceWithStreamingResponse:
-    def __init__(self, campaigns: CampaignsResource) -> None:
-        self._campaigns = campaigns
+class ArticlesResourceWithStreamingResponse:
+    def __init__(self, articles: ArticlesResource) -> None:
+        self._articles = articles
 
-        self.retrieve = to_streamed_response_wrapper(
-            campaigns.retrieve,
+        self.create = to_streamed_response_wrapper(
+            articles.create,
         )
         self.list = to_streamed_response_wrapper(
-            campaigns.list,
+            articles.list,
         )
 
 
-class AsyncCampaignsResourceWithStreamingResponse:
-    def __init__(self, campaigns: AsyncCampaignsResource) -> None:
-        self._campaigns = campaigns
+class AsyncArticlesResourceWithStreamingResponse:
+    def __init__(self, articles: AsyncArticlesResource) -> None:
+        self._articles = articles
 
-        self.retrieve = async_to_streamed_response_wrapper(
-            campaigns.retrieve,
+        self.create = async_to_streamed_response_wrapper(
+            articles.create,
         )
         self.list = async_to_streamed_response_wrapper(
-            campaigns.list,
+            articles.list,
         )

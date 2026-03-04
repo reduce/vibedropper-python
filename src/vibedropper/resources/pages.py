@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing_extensions import Literal
 
 import httpx
 
-from ..types import customer_list_params, customer_update_params
+from ..types import page_list_params, page_update_params
 from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
@@ -18,36 +19,37 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
-from ..types.customer_list_response import CustomerListResponse
-from ..types.customer_update_response import CustomerUpdateResponse
-from ..types.customer_retrieve_response import CustomerRetrieveResponse
+from ..types.page_list_response import PageListResponse
+from ..types.page_delete_response import PageDeleteResponse
+from ..types.page_update_response import PageUpdateResponse
+from ..types.page_retrieve_response import PageRetrieveResponse
 
-__all__ = ["CustomersResource", "AsyncCustomersResource"]
+__all__ = ["PagesResource", "AsyncPagesResource"]
 
 
-class CustomersResource(SyncAPIResource):
+class PagesResource(SyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> CustomersResourceWithRawResponse:
+    def with_raw_response(self) -> PagesResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
         """
-        return CustomersResourceWithRawResponse(self)
+        return PagesResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> CustomersResourceWithStreamingResponse:
+    def with_streaming_response(self) -> PagesResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
         """
-        return CustomersResourceWithStreamingResponse(self)
+        return PagesResourceWithStreamingResponse(self)
 
     def retrieve(
         self,
-        customer_id: str,
+        page_id: str,
         *,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -55,9 +57,9 @@ class CustomersResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerRetrieveResponse:
+    ) -> PageRetrieveResponse:
         """
-        Get customer
+        Get a page
 
         Args:
           extra_headers: Send extra headers
@@ -68,40 +70,32 @@ class CustomersResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not customer_id:
-            raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
         return self._get(
-            f"/customers/{customer_id}",
+            f"/pages/{page_id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CustomerRetrieveResponse,
+            cast_to=PageRetrieveResponse,
         )
 
     def update(
         self,
-        customer_id: str,
+        page_id: str,
         *,
-        address_line1: Optional[str] | Omit = omit,
-        address_line2: Optional[str] | Omit = omit,
-        city: Optional[str] | Omit = omit,
-        country: Optional[str] | Omit = omit,
-        first_name: Optional[str] | Omit = omit,
-        last_name: Optional[str] | Omit = omit,
+        description: Optional[str] | Omit = omit,
         name: str | Omit = omit,
-        pickup_location_id: Optional[str] | Omit = omit,
-        postal_code: Optional[str] | Omit = omit,
-        region_id: Optional[str] | Omit = omit,
-        state: Optional[str] | Omit = omit,
+        status: Literal["DRAFT", "ACTIVE", "ENDED", "ARCHIVED"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerUpdateResponse:
+    ) -> PageUpdateResponse:
         """
-        Update customer
+        Update a page
 
         Args:
           extra_headers: Send extra headers
@@ -112,30 +106,22 @@ class CustomersResource(SyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not customer_id:
-            raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
-        return self._patch(
-            f"/customers/{customer_id}",
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
+        return self._put(
+            f"/pages/{page_id}",
             body=maybe_transform(
                 {
-                    "address_line1": address_line1,
-                    "address_line2": address_line2,
-                    "city": city,
-                    "country": country,
-                    "first_name": first_name,
-                    "last_name": last_name,
+                    "description": description,
                     "name": name,
-                    "pickup_location_id": pickup_location_id,
-                    "postal_code": postal_code,
-                    "region_id": region_id,
-                    "state": state,
+                    "status": status,
                 },
-                customer_update_params.CustomerUpdateParams,
+                page_update_params.PageUpdateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CustomerUpdateResponse,
+            cast_to=PageUpdateResponse,
         )
 
     def list(
@@ -143,19 +129,20 @@ class CustomersResource(SyncAPIResource):
         *,
         limit: int | Omit = omit,
         page: int | Omit = omit,
-        search: str | Omit = omit,
+        status: Literal["DRAFT", "ACTIVE", "ENDED", "ARCHIVED", "all"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerListResponse:
-        """
-        List customers
+    ) -> PageListResponse:
+        """List pages
 
         Args:
-          search: Search by name or email
+          status: Filter by status.
+
+        Omit or use "all" to return all pages.
 
           extra_headers: Send extra headers
 
@@ -166,7 +153,7 @@ class CustomersResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get(
-            "/customers",
+            "/pages",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -176,38 +163,71 @@ class CustomersResource(SyncAPIResource):
                     {
                         "limit": limit,
                         "page": page,
-                        "search": search,
+                        "status": status,
                     },
-                    customer_list_params.CustomerListParams,
+                    page_list_params.PageListParams,
                 ),
             ),
-            cast_to=CustomerListResponse,
+            cast_to=PageListResponse,
+        )
+
+    def delete(
+        self,
+        page_id: str,
+        *,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
+    ) -> PageDeleteResponse:
+        """
+        Delete a page
+
+        Args:
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
+        return self._delete(
+            f"/pages/{page_id}",
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=PageDeleteResponse,
         )
 
 
-class AsyncCustomersResource(AsyncAPIResource):
+class AsyncPagesResource(AsyncAPIResource):
     @cached_property
-    def with_raw_response(self) -> AsyncCustomersResourceWithRawResponse:
+    def with_raw_response(self) -> AsyncPagesResourceWithRawResponse:
         """
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
         """
-        return AsyncCustomersResourceWithRawResponse(self)
+        return AsyncPagesResourceWithRawResponse(self)
 
     @cached_property
-    def with_streaming_response(self) -> AsyncCustomersResourceWithStreamingResponse:
+    def with_streaming_response(self) -> AsyncPagesResourceWithStreamingResponse:
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
         For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
         """
-        return AsyncCustomersResourceWithStreamingResponse(self)
+        return AsyncPagesResourceWithStreamingResponse(self)
 
     async def retrieve(
         self,
-        customer_id: str,
+        page_id: str,
         *,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -215,9 +235,9 @@ class AsyncCustomersResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerRetrieveResponse:
+    ) -> PageRetrieveResponse:
         """
-        Get customer
+        Get a page
 
         Args:
           extra_headers: Send extra headers
@@ -228,40 +248,32 @@ class AsyncCustomersResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not customer_id:
-            raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
         return await self._get(
-            f"/customers/{customer_id}",
+            f"/pages/{page_id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CustomerRetrieveResponse,
+            cast_to=PageRetrieveResponse,
         )
 
     async def update(
         self,
-        customer_id: str,
+        page_id: str,
         *,
-        address_line1: Optional[str] | Omit = omit,
-        address_line2: Optional[str] | Omit = omit,
-        city: Optional[str] | Omit = omit,
-        country: Optional[str] | Omit = omit,
-        first_name: Optional[str] | Omit = omit,
-        last_name: Optional[str] | Omit = omit,
+        description: Optional[str] | Omit = omit,
         name: str | Omit = omit,
-        pickup_location_id: Optional[str] | Omit = omit,
-        postal_code: Optional[str] | Omit = omit,
-        region_id: Optional[str] | Omit = omit,
-        state: Optional[str] | Omit = omit,
+        status: Literal["DRAFT", "ACTIVE", "ENDED", "ARCHIVED"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerUpdateResponse:
+    ) -> PageUpdateResponse:
         """
-        Update customer
+        Update a page
 
         Args:
           extra_headers: Send extra headers
@@ -272,30 +284,22 @@ class AsyncCustomersResource(AsyncAPIResource):
 
           timeout: Override the client-level default timeout for this request, in seconds
         """
-        if not customer_id:
-            raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
-        return await self._patch(
-            f"/customers/{customer_id}",
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
+        return await self._put(
+            f"/pages/{page_id}",
             body=await async_maybe_transform(
                 {
-                    "address_line1": address_line1,
-                    "address_line2": address_line2,
-                    "city": city,
-                    "country": country,
-                    "first_name": first_name,
-                    "last_name": last_name,
+                    "description": description,
                     "name": name,
-                    "pickup_location_id": pickup_location_id,
-                    "postal_code": postal_code,
-                    "region_id": region_id,
-                    "state": state,
+                    "status": status,
                 },
-                customer_update_params.CustomerUpdateParams,
+                page_update_params.PageUpdateParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=CustomerUpdateResponse,
+            cast_to=PageUpdateResponse,
         )
 
     async def list(
@@ -303,19 +307,20 @@ class AsyncCustomersResource(AsyncAPIResource):
         *,
         limit: int | Omit = omit,
         page: int | Omit = omit,
-        search: str | Omit = omit,
+        status: Literal["DRAFT", "ACTIVE", "ENDED", "ARCHIVED", "all"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> CustomerListResponse:
-        """
-        List customers
+    ) -> PageListResponse:
+        """List pages
 
         Args:
-          search: Search by name or email
+          status: Filter by status.
+
+        Omit or use "all" to return all pages.
 
           extra_headers: Send extra headers
 
@@ -326,7 +331,7 @@ class AsyncCustomersResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._get(
-            "/customers",
+            "/pages",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -336,70 +341,115 @@ class AsyncCustomersResource(AsyncAPIResource):
                     {
                         "limit": limit,
                         "page": page,
-                        "search": search,
+                        "status": status,
                     },
-                    customer_list_params.CustomerListParams,
+                    page_list_params.PageListParams,
                 ),
             ),
-            cast_to=CustomerListResponse,
+            cast_to=PageListResponse,
+        )
+
+    async def delete(
+        self,
+        page_id: str,
+        *,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
+    ) -> PageDeleteResponse:
+        """
+        Delete a page
+
+        Args:
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not page_id:
+            raise ValueError(f"Expected a non-empty value for `page_id` but received {page_id!r}")
+        return await self._delete(
+            f"/pages/{page_id}",
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=PageDeleteResponse,
         )
 
 
-class CustomersResourceWithRawResponse:
-    def __init__(self, customers: CustomersResource) -> None:
-        self._customers = customers
+class PagesResourceWithRawResponse:
+    def __init__(self, pages: PagesResource) -> None:
+        self._pages = pages
 
         self.retrieve = to_raw_response_wrapper(
-            customers.retrieve,
+            pages.retrieve,
         )
         self.update = to_raw_response_wrapper(
-            customers.update,
+            pages.update,
         )
         self.list = to_raw_response_wrapper(
-            customers.list,
+            pages.list,
+        )
+        self.delete = to_raw_response_wrapper(
+            pages.delete,
         )
 
 
-class AsyncCustomersResourceWithRawResponse:
-    def __init__(self, customers: AsyncCustomersResource) -> None:
-        self._customers = customers
+class AsyncPagesResourceWithRawResponse:
+    def __init__(self, pages: AsyncPagesResource) -> None:
+        self._pages = pages
 
         self.retrieve = async_to_raw_response_wrapper(
-            customers.retrieve,
+            pages.retrieve,
         )
         self.update = async_to_raw_response_wrapper(
-            customers.update,
+            pages.update,
         )
         self.list = async_to_raw_response_wrapper(
-            customers.list,
+            pages.list,
+        )
+        self.delete = async_to_raw_response_wrapper(
+            pages.delete,
         )
 
 
-class CustomersResourceWithStreamingResponse:
-    def __init__(self, customers: CustomersResource) -> None:
-        self._customers = customers
+class PagesResourceWithStreamingResponse:
+    def __init__(self, pages: PagesResource) -> None:
+        self._pages = pages
 
         self.retrieve = to_streamed_response_wrapper(
-            customers.retrieve,
+            pages.retrieve,
         )
         self.update = to_streamed_response_wrapper(
-            customers.update,
+            pages.update,
         )
         self.list = to_streamed_response_wrapper(
-            customers.list,
+            pages.list,
+        )
+        self.delete = to_streamed_response_wrapper(
+            pages.delete,
         )
 
 
-class AsyncCustomersResourceWithStreamingResponse:
-    def __init__(self, customers: AsyncCustomersResource) -> None:
-        self._customers = customers
+class AsyncPagesResourceWithStreamingResponse:
+    def __init__(self, pages: AsyncPagesResource) -> None:
+        self._pages = pages
 
         self.retrieve = async_to_streamed_response_wrapper(
-            customers.retrieve,
+            pages.retrieve,
         )
         self.update = async_to_streamed_response_wrapper(
-            customers.update,
+            pages.update,
         )
         self.list = async_to_streamed_response_wrapper(
-            customers.list,
+            pages.list,
+        )
+        self.delete = async_to_streamed_response_wrapper(
+            pages.delete,
         )
