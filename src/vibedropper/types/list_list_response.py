@@ -2,22 +2,11 @@
 
 from typing import List as TypingList, Optional
 
-from pydantic import Field as FieldInfo
-
 from .list import List as ListList
 from .._models import BaseModel
+from .pagination import Pagination
 
-__all__ = ["ListListResponse", "Pagination"]
-
-
-class Pagination(BaseModel):
-    limit: Optional[int] = None
-
-    page: Optional[int] = None
-
-    total: Optional[int] = None
-
-    total_pages: Optional[int] = FieldInfo(alias="totalPages", default=None)
+__all__ = ["ListListResponse"]
 
 
 class ListListResponse(BaseModel):

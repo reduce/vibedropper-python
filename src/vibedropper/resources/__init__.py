@@ -1,5 +1,13 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+from .forms import (
+    FormsResource,
+    AsyncFormsResource,
+    FormsResourceWithRawResponse,
+    AsyncFormsResourceWithRawResponse,
+    FormsResourceWithStreamingResponse,
+    AsyncFormsResourceWithStreamingResponse,
+)
 from .lists import (
     ListsResource,
     AsyncListsResource,
@@ -7,6 +15,14 @@ from .lists import (
     AsyncListsResourceWithRawResponse,
     ListsResourceWithStreamingResponse,
     AsyncListsResourceWithStreamingResponse,
+)
+from .pages import (
+    PagesResource,
+    AsyncPagesResource,
+    PagesResourceWithRawResponse,
+    AsyncPagesResourceWithRawResponse,
+    PagesResourceWithStreamingResponse,
+    AsyncPagesResourceWithStreamingResponse,
 )
 from .campaigns import (
     CampaignsResource,
@@ -23,6 +39,14 @@ from .customers import (
     AsyncCustomersResourceWithRawResponse,
     CustomersResourceWithStreamingResponse,
     AsyncCustomersResourceWithStreamingResponse,
+)
+from .knowledge_bases import (
+    KnowledgeBasesResource,
+    AsyncKnowledgeBasesResource,
+    KnowledgeBasesResourceWithRawResponse,
+    AsyncKnowledgeBasesResourceWithRawResponse,
+    KnowledgeBasesResourceWithStreamingResponse,
+    AsyncKnowledgeBasesResourceWithStreamingResponse,
 )
 
 __all__ = [
@@ -44,4 +68,22 @@ __all__ = [
     "AsyncCampaignsResourceWithRawResponse",
     "CampaignsResourceWithStreamingResponse",
     "AsyncCampaignsResourceWithStreamingResponse",
+    "FormsResource",
+    "AsyncFormsResource",
+    "FormsResourceWithRawResponse",
+    "AsyncFormsResourceWithRawResponse",
+    "FormsResourceWithStreamingResponse",
+    "AsyncFormsResourceWithStreamingResponse",
+    "KnowledgeBasesResource",
+    "AsyncKnowledgeBasesResource",
+    "KnowledgeBasesResourceWithRawResponse",
+    "AsyncKnowledgeBasesResourceWithRawResponse",
+    "KnowledgeBasesResourceWithStreamingResponse",
+    "AsyncKnowledgeBasesResourceWithStreamingResponse",
+    "PagesResource",
+    "AsyncPagesResource",
+    "PagesResourceWithRawResponse",
+    "AsyncPagesResourceWithRawResponse",
+    "PagesResourceWithStreamingResponse",
+    "AsyncPagesResourceWithStreamingResponse",
 ]
