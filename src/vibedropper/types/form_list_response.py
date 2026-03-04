@@ -2,14 +2,14 @@
 
 from typing import List, Optional
 
+from .form import Form
 from .._models import BaseModel
-from .customer import Customer
 from .pagination import Pagination
 
-__all__ = ["CustomerListResponse"]
+__all__ = ["FormListResponse"]
 
 
-class CustomerListResponse(BaseModel):
-    customers: Optional[List[Customer]] = None
+class FormListResponse(BaseModel):
+    forms: Optional[List[Form]] = None
 
     pagination: Optional[Pagination] = None

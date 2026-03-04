@@ -31,10 +31,13 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import lists, campaigns, customers
+    from .resources import forms, lists, pages, campaigns, customers, knowledge_bases
+    from .resources.forms import FormsResource, AsyncFormsResource
+    from .resources.pages import PagesResource, AsyncPagesResource
     from .resources.campaigns import CampaignsResource, AsyncCampaignsResource
     from .resources.customers import CustomersResource, AsyncCustomersResource
     from .resources.lists.lists import ListsResource, AsyncListsResource
+    from .resources.knowledge_bases.knowledge_bases import KnowledgeBasesResource, AsyncKnowledgeBasesResource
 
 __all__ = [
     "Timeout",
@@ -120,6 +123,24 @@ class Vibedropper(SyncAPIClient):
         from .resources.campaigns import CampaignsResource
 
         return CampaignsResource(self)
+
+    @cached_property
+    def forms(self) -> FormsResource:
+        from .resources.forms import FormsResource
+
+        return FormsResource(self)
+
+    @cached_property
+    def knowledge_bases(self) -> KnowledgeBasesResource:
+        from .resources.knowledge_bases import KnowledgeBasesResource
+
+        return KnowledgeBasesResource(self)
+
+    @cached_property
+    def pages(self) -> PagesResource:
+        from .resources.pages import PagesResource
+
+        return PagesResource(self)
 
     @cached_property
     def with_raw_response(self) -> VibedropperWithRawResponse:
@@ -308,6 +329,24 @@ class AsyncVibedropper(AsyncAPIClient):
         return AsyncCampaignsResource(self)
 
     @cached_property
+    def forms(self) -> AsyncFormsResource:
+        from .resources.forms import AsyncFormsResource
+
+        return AsyncFormsResource(self)
+
+    @cached_property
+    def knowledge_bases(self) -> AsyncKnowledgeBasesResource:
+        from .resources.knowledge_bases import AsyncKnowledgeBasesResource
+
+        return AsyncKnowledgeBasesResource(self)
+
+    @cached_property
+    def pages(self) -> AsyncPagesResource:
+        from .resources.pages import AsyncPagesResource
+
+        return AsyncPagesResource(self)
+
+    @cached_property
     def with_raw_response(self) -> AsyncVibedropperWithRawResponse:
         return AsyncVibedropperWithRawResponse(self)
 
@@ -444,6 +483,24 @@ class VibedropperWithRawResponse:
 
         return CampaignsResourceWithRawResponse(self._client.campaigns)
 
+    @cached_property
+    def forms(self) -> forms.FormsResourceWithRawResponse:
+        from .resources.forms import FormsResourceWithRawResponse
+
+        return FormsResourceWithRawResponse(self._client.forms)
+
+    @cached_property
+    def knowledge_bases(self) -> knowledge_bases.KnowledgeBasesResourceWithRawResponse:
+        from .resources.knowledge_bases import KnowledgeBasesResourceWithRawResponse
+
+        return KnowledgeBasesResourceWithRawResponse(self._client.knowledge_bases)
+
+    @cached_property
+    def pages(self) -> pages.PagesResourceWithRawResponse:
+        from .resources.pages import PagesResourceWithRawResponse
+
+        return PagesResourceWithRawResponse(self._client.pages)
+
 
 class AsyncVibedropperWithRawResponse:
     _client: AsyncVibedropper
@@ -468,6 +525,24 @@ class AsyncVibedropperWithRawResponse:
         from .resources.campaigns import AsyncCampaignsResourceWithRawResponse
 
         return AsyncCampaignsResourceWithRawResponse(self._client.campaigns)
+
+    @cached_property
+    def forms(self) -> forms.AsyncFormsResourceWithRawResponse:
+        from .resources.forms import AsyncFormsResourceWithRawResponse
+
+        return AsyncFormsResourceWithRawResponse(self._client.forms)
+
+    @cached_property
+    def knowledge_bases(self) -> knowledge_bases.AsyncKnowledgeBasesResourceWithRawResponse:
+        from .resources.knowledge_bases import AsyncKnowledgeBasesResourceWithRawResponse
+
+        return AsyncKnowledgeBasesResourceWithRawResponse(self._client.knowledge_bases)
+
+    @cached_property
+    def pages(self) -> pages.AsyncPagesResourceWithRawResponse:
+        from .resources.pages import AsyncPagesResourceWithRawResponse
+
+        return AsyncPagesResourceWithRawResponse(self._client.pages)
 
 
 class VibedropperWithStreamedResponse:
@@ -494,6 +569,24 @@ class VibedropperWithStreamedResponse:
 
         return CampaignsResourceWithStreamingResponse(self._client.campaigns)
 
+    @cached_property
+    def forms(self) -> forms.FormsResourceWithStreamingResponse:
+        from .resources.forms import FormsResourceWithStreamingResponse
+
+        return FormsResourceWithStreamingResponse(self._client.forms)
+
+    @cached_property
+    def knowledge_bases(self) -> knowledge_bases.KnowledgeBasesResourceWithStreamingResponse:
+        from .resources.knowledge_bases import KnowledgeBasesResourceWithStreamingResponse
+
+        return KnowledgeBasesResourceWithStreamingResponse(self._client.knowledge_bases)
+
+    @cached_property
+    def pages(self) -> pages.PagesResourceWithStreamingResponse:
+        from .resources.pages import PagesResourceWithStreamingResponse
+
+        return PagesResourceWithStreamingResponse(self._client.pages)
+
 
 class AsyncVibedropperWithStreamedResponse:
     _client: AsyncVibedropper
@@ -518,6 +611,24 @@ class AsyncVibedropperWithStreamedResponse:
         from .resources.campaigns import AsyncCampaignsResourceWithStreamingResponse
 
         return AsyncCampaignsResourceWithStreamingResponse(self._client.campaigns)
+
+    @cached_property
+    def forms(self) -> forms.AsyncFormsResourceWithStreamingResponse:
+        from .resources.forms import AsyncFormsResourceWithStreamingResponse
+
+        return AsyncFormsResourceWithStreamingResponse(self._client.forms)
+
+    @cached_property
+    def knowledge_bases(self) -> knowledge_bases.AsyncKnowledgeBasesResourceWithStreamingResponse:
+        from .resources.knowledge_bases import AsyncKnowledgeBasesResourceWithStreamingResponse
+
+        return AsyncKnowledgeBasesResourceWithStreamingResponse(self._client.knowledge_bases)
+
+    @cached_property
+    def pages(self) -> pages.AsyncPagesResourceWithStreamingResponse:
+        from .resources.pages import AsyncPagesResourceWithStreamingResponse
+
+        return AsyncPagesResourceWithStreamingResponse(self._client.pages)
 
 
 Client = Vibedropper
