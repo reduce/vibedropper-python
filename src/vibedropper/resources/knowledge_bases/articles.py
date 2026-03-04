@@ -31,7 +31,7 @@ class ArticlesResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/reduce/vibedropper-python#accessing-raw-response-data-eg-headers
         """
         return ArticlesResourceWithRawResponse(self)
 
@@ -40,7 +40,7 @@ class ArticlesResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
+        For more information, see https://www.github.com/reduce/vibedropper-python#with_streaming_response
         """
         return ArticlesResourceWithStreamingResponse(self)
 
@@ -147,7 +147,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/vibedropper-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/reduce/vibedropper-python#accessing-raw-response-data-eg-headers
         """
         return AsyncArticlesResourceWithRawResponse(self)
 
@@ -156,7 +156,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/vibedropper-python#with_streaming_response
+        For more information, see https://www.github.com/reduce/vibedropper-python#with_streaming_response
         """
         return AsyncArticlesResourceWithStreamingResponse(self)
 
