@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0 (2026-03-04)
+
+Full Changelog: [v0.3.0...v0.4.0](https://github.com/reduce/vibedropper-python/compare/v0.3.0...v0.4.0)
+
+### Features
+
+* **api:** manual updates ([6e6612a](https://github.com/reduce/vibedropper-python/commit/6e6612a3972a9861ac6f3531e53ad9252ce5fd26))
+
+
+### Chores
+
+* update SDK settings ([cc7a237](https://github.com/reduce/vibedropper-python/commit/cc7a237d5ecdbdefea16aab1df114426303ffce3))
+* update SDK settings ([593a7f8](https://github.com/reduce/vibedropper-python/commit/593a7f877e1e39872e0a86262d33013cf223cba7))
+* update SDK settings ([3646fe6](https://github.com/reduce/vibedropper-python/commit/3646fe6f9ed9e389a1df50b68dbd41899ae19433))
+
 ## 0.3.0 (2026-03-03)
 
 Full Changelog: [v0.2.1...v0.3.0](https://github.com/reduce/vibedropper-python/compare/v0.2.1...v0.3.0)
