@@ -34,8 +34,11 @@ __all__ = ["KnowledgeBasesResource", "AsyncKnowledgeBasesResource"]
 
 
 class KnowledgeBasesResource(SyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def articles(self) -> ArticlesResource:
+        """Manage knowledge bases and articles"""
         return ArticlesResource(self._client)
 
     @cached_property
@@ -189,8 +192,11 @@ class KnowledgeBasesResource(SyncAPIResource):
 
 
 class AsyncKnowledgeBasesResource(AsyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def articles(self) -> AsyncArticlesResource:
+        """Manage knowledge bases and articles"""
         return AsyncArticlesResource(self._client)
 
     @cached_property
@@ -362,6 +368,7 @@ class KnowledgeBasesResourceWithRawResponse:
 
     @cached_property
     def articles(self) -> ArticlesResourceWithRawResponse:
+        """Manage knowledge bases and articles"""
         return ArticlesResourceWithRawResponse(self._knowledge_bases.articles)
 
 
@@ -384,6 +391,7 @@ class AsyncKnowledgeBasesResourceWithRawResponse:
 
     @cached_property
     def articles(self) -> AsyncArticlesResourceWithRawResponse:
+        """Manage knowledge bases and articles"""
         return AsyncArticlesResourceWithRawResponse(self._knowledge_bases.articles)
 
 
@@ -406,6 +414,7 @@ class KnowledgeBasesResourceWithStreamingResponse:
 
     @cached_property
     def articles(self) -> ArticlesResourceWithStreamingResponse:
+        """Manage knowledge bases and articles"""
         return ArticlesResourceWithStreamingResponse(self._knowledge_bases.articles)
 
 
@@ -428,4 +437,5 @@ class AsyncKnowledgeBasesResourceWithStreamingResponse:
 
     @cached_property
     def articles(self) -> AsyncArticlesResourceWithStreamingResponse:
+        """Manage knowledge bases and articles"""
         return AsyncArticlesResourceWithStreamingResponse(self._knowledge_bases.articles)
