@@ -24,6 +24,8 @@ __all__ = ["SubscribersResource", "AsyncSubscribersResource"]
 
 
 class SubscribersResource(SyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> SubscribersResourceWithRawResponse:
         """
@@ -170,6 +172,8 @@ class SubscribersResource(SyncAPIResource):
 
 
 class AsyncSubscribersResource(AsyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> AsyncSubscribersResourceWithRawResponse:
         """

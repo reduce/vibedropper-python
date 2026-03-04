@@ -28,6 +28,8 @@ __all__ = ["PagesResource", "AsyncPagesResource"]
 
 
 class PagesResource(SyncAPIResource):
+    """Manage landing pages"""
+
     @cached_property
     def with_raw_response(self) -> PagesResourceWithRawResponse:
         """
@@ -206,6 +208,8 @@ class PagesResource(SyncAPIResource):
 
 
 class AsyncPagesResource(AsyncAPIResource):
+    """Manage landing pages"""
+
     @cached_property
     def with_raw_response(self) -> AsyncPagesResourceWithRawResponse:
         """

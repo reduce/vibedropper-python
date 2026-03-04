@@ -21,6 +21,8 @@ __all__ = ["CampaignsResource", "AsyncCampaignsResource"]
 
 
 class CampaignsResource(SyncAPIResource):
+    """Access email campaigns (read-only)"""
+
     @cached_property
     def with_raw_response(self) -> CampaignsResourceWithRawResponse:
         """
@@ -97,6 +99,8 @@ class CampaignsResource(SyncAPIResource):
 
 
 class AsyncCampaignsResource(AsyncAPIResource):
+    """Access email campaigns (read-only)"""
+
     @cached_property
     def with_raw_response(self) -> AsyncCampaignsResourceWithRawResponse:
         """

@@ -29,6 +29,8 @@ __all__ = ["FormsResource", "AsyncFormsResource"]
 
 
 class FormsResource(SyncAPIResource):
+    """Manage forms and submissions"""
+
     @cached_property
     def with_raw_response(self) -> FormsResourceWithRawResponse:
         """
@@ -258,6 +260,8 @@ class FormsResource(SyncAPIResource):
 
 
 class AsyncFormsResource(AsyncAPIResource):
+    """Manage forms and submissions"""
+
     @cached_property
     def with_raw_response(self) -> AsyncFormsResourceWithRawResponse:
         """
