@@ -26,6 +26,8 @@ __all__ = ["CustomersResource", "AsyncCustomersResource"]
 
 
 class CustomersResource(SyncAPIResource):
+    """Manage customers"""
+
     @cached_property
     def with_raw_response(self) -> CustomersResourceWithRawResponse:
         """
@@ -57,7 +59,7 @@ class CustomersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerRetrieveResponse:
         """
-        Get customer
+        Get a customer
 
         Args:
           extra_headers: Send extra headers
@@ -101,7 +103,7 @@ class CustomersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerUpdateResponse:
         """
-        Update customer
+        Update a customer
 
         Args:
           extra_headers: Send extra headers
@@ -155,7 +157,7 @@ class CustomersResource(SyncAPIResource):
         List customers
 
         Args:
-          search: Search by name or email
+          search: Search by name or email (case-insensitive)
 
           extra_headers: Send extra headers
 
@@ -186,6 +188,8 @@ class CustomersResource(SyncAPIResource):
 
 
 class AsyncCustomersResource(AsyncAPIResource):
+    """Manage customers"""
+
     @cached_property
     def with_raw_response(self) -> AsyncCustomersResourceWithRawResponse:
         """
@@ -217,7 +221,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerRetrieveResponse:
         """
-        Get customer
+        Get a customer
 
         Args:
           extra_headers: Send extra headers
@@ -261,7 +265,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerUpdateResponse:
         """
-        Update customer
+        Update a customer
 
         Args:
           extra_headers: Send extra headers
@@ -315,7 +319,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         List customers
 
         Args:
-          search: Search by name or email
+          search: Search by name or email (case-insensitive)
 
           extra_headers: Send extra headers
 

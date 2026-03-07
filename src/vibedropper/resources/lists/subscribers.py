@@ -24,6 +24,8 @@ __all__ = ["SubscribersResource", "AsyncSubscribersResource"]
 
 
 class SubscribersResource(SyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> SubscribersResourceWithRawResponse:
         """
@@ -55,7 +57,8 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberListResponse:
         """
-        List subscribers
+        Returns all subscribers for the list ordered by subscribe date descending.
+        Includes linked customer data.
 
         Args:
           extra_headers: Send extra headers
@@ -93,9 +96,16 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber to list
+        Creates or updates the matching customer record and adds a subscriber entry.
+        Returns 400 with code `duplicate` if already subscribed.
 
         Args:
+          custom_fields: Arbitrary key-value metadata
+
+          pickup_location_id: Pickup location ID (must belong to the given regionId)
+
+          region_id: Region ID to assign to the customer
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -137,7 +147,7 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber from list
+        Remove a subscriber from a list
 
         Args:
           extra_headers: Send extra headers
@@ -162,6 +172,8 @@ class SubscribersResource(SyncAPIResource):
 
 
 class AsyncSubscribersResource(AsyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> AsyncSubscribersResourceWithRawResponse:
         """
@@ -193,7 +205,8 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberListResponse:
         """
-        List subscribers
+        Returns all subscribers for the list ordered by subscribe date descending.
+        Includes linked customer data.
 
         Args:
           extra_headers: Send extra headers
@@ -231,9 +244,16 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber to list
+        Creates or updates the matching customer record and adds a subscriber entry.
+        Returns 400 with code `duplicate` if already subscribed.
 
         Args:
+          custom_fields: Arbitrary key-value metadata
+
+          pickup_location_id: Pickup location ID (must belong to the given regionId)
+
+          region_id: Region ID to assign to the customer
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -275,7 +295,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber from list
+        Remove a subscriber from a list
 
         Args:
           extra_headers: Send extra headers

@@ -31,8 +31,11 @@ __all__ = ["ListsResource", "AsyncListsResource"]
 
 
 class ListsResource(SyncAPIResource):
+    """Manage subscriber lists"""
+
     @cached_property
     def subscribers(self) -> SubscribersResource:
+        """Manage list subscribers"""
         return SubscribersResource(self._client)
 
     @cached_property
@@ -131,8 +134,11 @@ class ListsResource(SyncAPIResource):
 
 
 class AsyncListsResource(AsyncAPIResource):
+    """Manage subscriber lists"""
+
     @cached_property
     def subscribers(self) -> AsyncSubscribersResource:
+        """Manage list subscribers"""
         return AsyncSubscribersResource(self._client)
 
     @cached_property
@@ -243,6 +249,7 @@ class ListsResourceWithRawResponse:
 
     @cached_property
     def subscribers(self) -> SubscribersResourceWithRawResponse:
+        """Manage list subscribers"""
         return SubscribersResourceWithRawResponse(self._lists.subscribers)
 
 
@@ -259,6 +266,7 @@ class AsyncListsResourceWithRawResponse:
 
     @cached_property
     def subscribers(self) -> AsyncSubscribersResourceWithRawResponse:
+        """Manage list subscribers"""
         return AsyncSubscribersResourceWithRawResponse(self._lists.subscribers)
 
 
@@ -275,6 +283,7 @@ class ListsResourceWithStreamingResponse:
 
     @cached_property
     def subscribers(self) -> SubscribersResourceWithStreamingResponse:
+        """Manage list subscribers"""
         return SubscribersResourceWithStreamingResponse(self._lists.subscribers)
 
 
@@ -291,4 +300,5 @@ class AsyncListsResourceWithStreamingResponse:
 
     @cached_property
     def subscribers(self) -> AsyncSubscribersResourceWithStreamingResponse:
+        """Manage list subscribers"""
         return AsyncSubscribersResourceWithStreamingResponse(self._lists.subscribers)

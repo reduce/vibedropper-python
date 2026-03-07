@@ -25,6 +25,8 @@ __all__ = ["ArticlesResource", "AsyncArticlesResource"]
 
 
 class ArticlesResource(SyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def with_raw_response(self) -> ArticlesResourceWithRawResponse:
         """
@@ -64,7 +66,7 @@ class ArticlesResource(SyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 
@@ -141,6 +143,8 @@ class ArticlesResource(SyncAPIResource):
 
 
 class AsyncArticlesResource(AsyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def with_raw_response(self) -> AsyncArticlesResourceWithRawResponse:
         """
@@ -180,7 +184,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 

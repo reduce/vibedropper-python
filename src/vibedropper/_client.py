@@ -21,6 +21,7 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._compat import cached_property
+from ._models import SecurityOptions
 from ._version import __version__
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError, VibedropperError
@@ -108,36 +109,42 @@ class Vibedropper(SyncAPIClient):
 
     @cached_property
     def lists(self) -> ListsResource:
+        """Manage subscriber lists"""
         from .resources.lists import ListsResource
 
         return ListsResource(self)
 
     @cached_property
     def customers(self) -> CustomersResource:
+        """Manage customers"""
         from .resources.customers import CustomersResource
 
         return CustomersResource(self)
 
     @cached_property
     def campaigns(self) -> CampaignsResource:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import CampaignsResource
 
         return CampaignsResource(self)
 
     @cached_property
     def forms(self) -> FormsResource:
+        """Manage forms and submissions"""
         from .resources.forms import FormsResource
 
         return FormsResource(self)
 
     @cached_property
     def knowledge_bases(self) -> KnowledgeBasesResource:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import KnowledgeBasesResource
 
         return KnowledgeBasesResource(self)
 
     @cached_property
     def pages(self) -> PagesResource:
+        """Manage landing pages"""
         from .resources.pages import PagesResource
 
         return PagesResource(self)
@@ -155,9 +162,14 @@ class Vibedropper(SyncAPIClient):
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
 
-    @property
     @override
-    def auth_headers(self) -> dict[str, str]:
+    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
+        return {
+            **(self._bearer_auth if security.get("bearer_auth", False) else {}),
+        }
+
+    @property
+    def _bearer_auth(self) -> dict[str, str]:
         api_key = self.api_key
         return {"Authorization": f"Bearer {api_key}"}
 
@@ -312,36 +324,42 @@ class AsyncVibedropper(AsyncAPIClient):
 
     @cached_property
     def lists(self) -> AsyncListsResource:
+        """Manage subscriber lists"""
         from .resources.lists import AsyncListsResource
 
         return AsyncListsResource(self)
 
     @cached_property
     def customers(self) -> AsyncCustomersResource:
+        """Manage customers"""
         from .resources.customers import AsyncCustomersResource
 
         return AsyncCustomersResource(self)
 
     @cached_property
     def campaigns(self) -> AsyncCampaignsResource:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import AsyncCampaignsResource
 
         return AsyncCampaignsResource(self)
 
     @cached_property
     def forms(self) -> AsyncFormsResource:
+        """Manage forms and submissions"""
         from .resources.forms import AsyncFormsResource
 
         return AsyncFormsResource(self)
 
     @cached_property
     def knowledge_bases(self) -> AsyncKnowledgeBasesResource:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import AsyncKnowledgeBasesResource
 
         return AsyncKnowledgeBasesResource(self)
 
     @cached_property
     def pages(self) -> AsyncPagesResource:
+        """Manage landing pages"""
         from .resources.pages import AsyncPagesResource
 
         return AsyncPagesResource(self)
@@ -359,9 +377,14 @@ class AsyncVibedropper(AsyncAPIClient):
     def qs(self) -> Querystring:
         return Querystring(array_format="comma")
 
-    @property
     @override
-    def auth_headers(self) -> dict[str, str]:
+    def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
+        return {
+            **(self._bearer_auth if security.get("bearer_auth", False) else {}),
+        }
+
+    @property
+    def _bearer_auth(self) -> dict[str, str]:
         api_key = self.api_key
         return {"Authorization": f"Bearer {api_key}"}
 
@@ -467,36 +490,42 @@ class VibedropperWithRawResponse:
 
     @cached_property
     def lists(self) -> lists.ListsResourceWithRawResponse:
+        """Manage subscriber lists"""
         from .resources.lists import ListsResourceWithRawResponse
 
         return ListsResourceWithRawResponse(self._client.lists)
 
     @cached_property
     def customers(self) -> customers.CustomersResourceWithRawResponse:
+        """Manage customers"""
         from .resources.customers import CustomersResourceWithRawResponse
 
         return CustomersResourceWithRawResponse(self._client.customers)
 
     @cached_property
     def campaigns(self) -> campaigns.CampaignsResourceWithRawResponse:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import CampaignsResourceWithRawResponse
 
         return CampaignsResourceWithRawResponse(self._client.campaigns)
 
     @cached_property
     def forms(self) -> forms.FormsResourceWithRawResponse:
+        """Manage forms and submissions"""
         from .resources.forms import FormsResourceWithRawResponse
 
         return FormsResourceWithRawResponse(self._client.forms)
 
     @cached_property
     def knowledge_bases(self) -> knowledge_bases.KnowledgeBasesResourceWithRawResponse:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import KnowledgeBasesResourceWithRawResponse
 
         return KnowledgeBasesResourceWithRawResponse(self._client.knowledge_bases)
 
     @cached_property
     def pages(self) -> pages.PagesResourceWithRawResponse:
+        """Manage landing pages"""
         from .resources.pages import PagesResourceWithRawResponse
 
         return PagesResourceWithRawResponse(self._client.pages)
@@ -510,36 +539,42 @@ class AsyncVibedropperWithRawResponse:
 
     @cached_property
     def lists(self) -> lists.AsyncListsResourceWithRawResponse:
+        """Manage subscriber lists"""
         from .resources.lists import AsyncListsResourceWithRawResponse
 
         return AsyncListsResourceWithRawResponse(self._client.lists)
 
     @cached_property
     def customers(self) -> customers.AsyncCustomersResourceWithRawResponse:
+        """Manage customers"""
         from .resources.customers import AsyncCustomersResourceWithRawResponse
 
         return AsyncCustomersResourceWithRawResponse(self._client.customers)
 
     @cached_property
     def campaigns(self) -> campaigns.AsyncCampaignsResourceWithRawResponse:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import AsyncCampaignsResourceWithRawResponse
 
         return AsyncCampaignsResourceWithRawResponse(self._client.campaigns)
 
     @cached_property
     def forms(self) -> forms.AsyncFormsResourceWithRawResponse:
+        """Manage forms and submissions"""
         from .resources.forms import AsyncFormsResourceWithRawResponse
 
         return AsyncFormsResourceWithRawResponse(self._client.forms)
 
     @cached_property
     def knowledge_bases(self) -> knowledge_bases.AsyncKnowledgeBasesResourceWithRawResponse:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import AsyncKnowledgeBasesResourceWithRawResponse
 
         return AsyncKnowledgeBasesResourceWithRawResponse(self._client.knowledge_bases)
 
     @cached_property
     def pages(self) -> pages.AsyncPagesResourceWithRawResponse:
+        """Manage landing pages"""
         from .resources.pages import AsyncPagesResourceWithRawResponse
 
         return AsyncPagesResourceWithRawResponse(self._client.pages)
@@ -553,36 +588,42 @@ class VibedropperWithStreamedResponse:
 
     @cached_property
     def lists(self) -> lists.ListsResourceWithStreamingResponse:
+        """Manage subscriber lists"""
         from .resources.lists import ListsResourceWithStreamingResponse
 
         return ListsResourceWithStreamingResponse(self._client.lists)
 
     @cached_property
     def customers(self) -> customers.CustomersResourceWithStreamingResponse:
+        """Manage customers"""
         from .resources.customers import CustomersResourceWithStreamingResponse
 
         return CustomersResourceWithStreamingResponse(self._client.customers)
 
     @cached_property
     def campaigns(self) -> campaigns.CampaignsResourceWithStreamingResponse:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import CampaignsResourceWithStreamingResponse
 
         return CampaignsResourceWithStreamingResponse(self._client.campaigns)
 
     @cached_property
     def forms(self) -> forms.FormsResourceWithStreamingResponse:
+        """Manage forms and submissions"""
         from .resources.forms import FormsResourceWithStreamingResponse
 
         return FormsResourceWithStreamingResponse(self._client.forms)
 
     @cached_property
     def knowledge_bases(self) -> knowledge_bases.KnowledgeBasesResourceWithStreamingResponse:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import KnowledgeBasesResourceWithStreamingResponse
 
         return KnowledgeBasesResourceWithStreamingResponse(self._client.knowledge_bases)
 
     @cached_property
     def pages(self) -> pages.PagesResourceWithStreamingResponse:
+        """Manage landing pages"""
         from .resources.pages import PagesResourceWithStreamingResponse
 
         return PagesResourceWithStreamingResponse(self._client.pages)
@@ -596,36 +637,42 @@ class AsyncVibedropperWithStreamedResponse:
 
     @cached_property
     def lists(self) -> lists.AsyncListsResourceWithStreamingResponse:
+        """Manage subscriber lists"""
         from .resources.lists import AsyncListsResourceWithStreamingResponse
 
         return AsyncListsResourceWithStreamingResponse(self._client.lists)
 
     @cached_property
     def customers(self) -> customers.AsyncCustomersResourceWithStreamingResponse:
+        """Manage customers"""
         from .resources.customers import AsyncCustomersResourceWithStreamingResponse
 
         return AsyncCustomersResourceWithStreamingResponse(self._client.customers)
 
     @cached_property
     def campaigns(self) -> campaigns.AsyncCampaignsResourceWithStreamingResponse:
+        """Access email campaigns (read-only)"""
         from .resources.campaigns import AsyncCampaignsResourceWithStreamingResponse
 
         return AsyncCampaignsResourceWithStreamingResponse(self._client.campaigns)
 
     @cached_property
     def forms(self) -> forms.AsyncFormsResourceWithStreamingResponse:
+        """Manage forms and submissions"""
         from .resources.forms import AsyncFormsResourceWithStreamingResponse
 
         return AsyncFormsResourceWithStreamingResponse(self._client.forms)
 
     @cached_property
     def knowledge_bases(self) -> knowledge_bases.AsyncKnowledgeBasesResourceWithStreamingResponse:
+        """Manage knowledge bases and articles"""
         from .resources.knowledge_bases import AsyncKnowledgeBasesResourceWithStreamingResponse
 
         return AsyncKnowledgeBasesResourceWithStreamingResponse(self._client.knowledge_bases)
 
     @cached_property
     def pages(self) -> pages.AsyncPagesResourceWithStreamingResponse:
+        """Manage landing pages"""
         from .resources.pages import AsyncPagesResourceWithStreamingResponse
 
         return AsyncPagesResourceWithStreamingResponse(self._client.pages)
