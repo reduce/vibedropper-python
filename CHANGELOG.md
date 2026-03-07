@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.5.0 (2026-03-07)
+
+Full Changelog: [v0.4.0...v0.5.0](https://github.com/reduce/vibedropper-python/compare/v0.4.0...v0.5.0)
+
+### Features
+
+* **api:** api update ([132d96d](https://github.com/reduce/vibedropper-python/commit/132d96deaa5ae779246c7e1e77d0ad61ad8d1a71))
+
+
+### Chores
+
+* **ci:** skip uploading artifacts on stainless-internal branches ([b4b38e6](https://github.com/reduce/vibedropper-python/commit/b4b38e63e7b95eacde0de7c9a117a9e8a5f0c9c6))
+* **internal:** codegen related update ([67c8fb3](https://github.com/reduce/vibedropper-python/commit/67c8fb3e0201b065e11097a799e2c455537b8b5e))
+* **internal:** refactor authentication internals ([3f7c9e0](https://github.com/reduce/vibedropper-python/commit/3f7c9e0cf7a7d8221417cb107d041d9c645b9543))
+* update SDK settings ([d1835a0](https://github.com/reduce/vibedropper-python/commit/d1835a0dd7c4f743ad9adca21507a1aadc353dc8))
+* update SDK settings ([b340f61](https://github.com/reduce/vibedropper-python/commit/b340f6146004c2db144eddd96ea48f331f777620))
+
 ## 0.4.0 (2026-03-04)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/reduce/vibedropper-python/compare/v0.3.0...v0.4.0)
