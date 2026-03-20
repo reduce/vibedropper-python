@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.5.0 (2026-03-20)
+
+Full Changelog: [v0.4.0...v0.5.0](https://github.com/reduce/vibedropper-python/compare/v0.4.0...v0.5.0)
+
+### Features
+
+* **api:** api update ([132d96d](https://github.com/reduce/vibedropper-python/commit/132d96deaa5ae779246c7e1e77d0ad61ad8d1a71))
+
+
+### Bug Fixes
+
+* **deps:** bump minimum typing-extensions version ([c977e76](https://github.com/reduce/vibedropper-python/commit/c977e76ced27a7ff83d17d732853b2c3dbfcef67))
+* **pydantic:** do not pass `by_alias` unless set ([f930e2f](https://github.com/reduce/vibedropper-python/commit/f930e2f0f17f582f4d005ccbba2805d55d265968))
+* sanitize endpoint path params ([853c5c7](https://github.com/reduce/vibedropper-python/commit/853c5c725460eab9ef9ef1e0552f77d4c874b66e))
+
+
+### Chores
+
+* **ci:** skip uploading artifacts on stainless-internal branches ([b4b38e6](https://github.com/reduce/vibedropper-python/commit/b4b38e63e7b95eacde0de7c9a117a9e8a5f0c9c6))
+* **internal:** codegen related update ([67c8fb3](https://github.com/reduce/vibedropper-python/commit/67c8fb3e0201b065e11097a799e2c455537b8b5e))
+* **internal:** refactor authentication internals ([3f7c9e0](https://github.com/reduce/vibedropper-python/commit/3f7c9e0cf7a7d8221417cb107d041d9c645b9543))
+* **internal:** tweak CI branches ([cf4aebb](https://github.com/reduce/vibedropper-python/commit/cf4aebb393d1a8a9147d8fc93578d9d46a6b5cea))
+* update SDK settings ([d1835a0](https://github.com/reduce/vibedropper-python/commit/d1835a0dd7c4f743ad9adca21507a1aadc353dc8))
+* update SDK settings ([b340f61](https://github.com/reduce/vibedropper-python/commit/b340f6146004c2db144eddd96ea48f331f777620))
+
 ## 0.4.0 (2026-03-04)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/reduce/vibedropper-python/compare/v0.3.0...v0.4.0)
