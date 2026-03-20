@@ -8,7 +8,7 @@ import httpx
 
 from ...types import knowledge_base_update_params
 from ..._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
-from ..._utils import maybe_transform, async_maybe_transform
+from ..._utils import path_template, maybe_transform, async_maybe_transform
 from .articles import (
     ArticlesResource,
     AsyncArticlesResource,
@@ -86,7 +86,7 @@ class KnowledgeBasesResource(SyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return self._get(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -122,7 +122,7 @@ class KnowledgeBasesResource(SyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return self._patch(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             body=maybe_transform(
                 {
                     "description": description,
@@ -183,7 +183,7 @@ class KnowledgeBasesResource(SyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -244,7 +244,7 @@ class AsyncKnowledgeBasesResource(AsyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return await self._get(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -280,7 +280,7 @@ class AsyncKnowledgeBasesResource(AsyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return await self._patch(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             body=await async_maybe_transform(
                 {
                     "description": description,
@@ -341,7 +341,7 @@ class AsyncKnowledgeBasesResource(AsyncAPIResource):
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
-            f"/knowledge-bases/{kb_id}",
+            path_template("/knowledge-bases/{kb_id}", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
