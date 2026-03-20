@@ -9,7 +9,7 @@ import httpx
 
 from ..types import form_list_params, form_update_params, form_list_submissions_params
 from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from .._utils import maybe_transform, async_maybe_transform
+from .._utils import path_template, maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
 from .._response import (
@@ -76,7 +76,7 @@ class FormsResource(SyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return self._get(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -116,7 +116,7 @@ class FormsResource(SyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return self._put(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             body=maybe_transform(
                 {
                     "description": description,
@@ -206,7 +206,7 @@ class FormsResource(SyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return self._delete(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -241,7 +241,7 @@ class FormsResource(SyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return self._get(
-            f"/forms/{form_id}/submissions",
+            path_template("/forms/{form_id}/submissions", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -307,7 +307,7 @@ class AsyncFormsResource(AsyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return await self._get(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -347,7 +347,7 @@ class AsyncFormsResource(AsyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return await self._put(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             body=await async_maybe_transform(
                 {
                     "description": description,
@@ -437,7 +437,7 @@ class AsyncFormsResource(AsyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return await self._delete(
-            f"/forms/{form_id}",
+            path_template("/forms/{form_id}", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -472,7 +472,7 @@ class AsyncFormsResource(AsyncAPIResource):
         if not form_id:
             raise ValueError(f"Expected a non-empty value for `form_id` but received {form_id!r}")
         return await self._get(
-            f"/forms/{form_id}/submissions",
+            path_template("/forms/{form_id}/submissions", form_id=form_id),
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
