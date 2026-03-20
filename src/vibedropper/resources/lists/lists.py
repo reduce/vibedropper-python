@@ -6,7 +6,7 @@ import httpx
 
 from ...types import list_list_params
 from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from ..._utils import maybe_transform, async_maybe_transform
+from ..._utils import path_template, maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
 from ..._response import (
@@ -31,8 +31,11 @@ __all__ = ["ListsResource", "AsyncListsResource"]
 
 
 class ListsResource(SyncAPIResource):
+    """Manage subscriber lists"""
+
     @cached_property
     def subscribers(self) -> SubscribersResource:
+        """Manage list subscribers"""
         return SubscribersResource(self._client)
 
     @cached_property
@@ -80,7 +83,7 @@ class ListsResource(SyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return self._get(
-            f"/lists/{list_id}",
+            path_template("/lists/{list_id}", list_id=list_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -131,8 +134,11 @@ class ListsResource(SyncAPIResource):
 
 
 class AsyncListsResource(AsyncAPIResource):
+    """Manage subscriber lists"""
+
     @cached_property
     def subscribers(self) -> AsyncSubscribersResource:
+        """Manage list subscribers"""
         return AsyncSubscribersResource(self._client)
 
     @cached_property
@@ -180,7 +186,7 @@ class AsyncListsResource(AsyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return await self._get(
-            f"/lists/{list_id}",
+            path_template("/lists/{list_id}", list_id=list_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -243,6 +249,7 @@ class ListsResourceWithRawResponse:
 
     @cached_property
     def subscribers(self) -> SubscribersResourceWithRawResponse:
+        """Manage list subscribers"""
         return SubscribersResourceWithRawResponse(self._lists.subscribers)
 
 
@@ -259,6 +266,7 @@ class AsyncListsResourceWithRawResponse:
 
     @cached_property
     def subscribers(self) -> AsyncSubscribersResourceWithRawResponse:
+        """Manage list subscribers"""
         return AsyncSubscribersResourceWithRawResponse(self._lists.subscribers)
 
 
@@ -275,6 +283,7 @@ class ListsResourceWithStreamingResponse:
 
     @cached_property
     def subscribers(self) -> SubscribersResourceWithStreamingResponse:
+        """Manage list subscribers"""
         return SubscribersResourceWithStreamingResponse(self._lists.subscribers)
 
 
@@ -291,4 +300,5 @@ class AsyncListsResourceWithStreamingResponse:
 
     @cached_property
     def subscribers(self) -> AsyncSubscribersResourceWithStreamingResponse:
+        """Manage list subscribers"""
         return AsyncSubscribersResourceWithStreamingResponse(self._lists.subscribers)

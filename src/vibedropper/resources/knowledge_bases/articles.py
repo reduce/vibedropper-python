@@ -7,7 +7,7 @@ from typing import Optional
 import httpx
 
 from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from ..._utils import maybe_transform, async_maybe_transform
+from ..._utils import path_template, maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
 from ..._response import (
@@ -25,6 +25,8 @@ __all__ = ["ArticlesResource", "AsyncArticlesResource"]
 
 
 class ArticlesResource(SyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def with_raw_response(self) -> ArticlesResourceWithRawResponse:
         """
@@ -64,7 +66,7 @@ class ArticlesResource(SyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 
@@ -77,7 +79,7 @@ class ArticlesResource(SyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return self._post(
-            f"/knowledge-bases/{kb_id}/articles",
+            path_template("/knowledge-bases/{kb_id}/articles", kb_id=kb_id),
             body=maybe_transform(
                 {
                     "title": title,
@@ -122,7 +124,7 @@ class ArticlesResource(SyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return self._get(
-            f"/knowledge-bases/{kb_id}/articles",
+            path_template("/knowledge-bases/{kb_id}/articles", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -141,6 +143,8 @@ class ArticlesResource(SyncAPIResource):
 
 
 class AsyncArticlesResource(AsyncAPIResource):
+    """Manage knowledge bases and articles"""
+
     @cached_property
     def with_raw_response(self) -> AsyncArticlesResourceWithRawResponse:
         """
@@ -180,7 +184,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         Create an article
 
         Args:
-          content: HTML or markdown content
+          content: HTML content
 
           extra_headers: Send extra headers
 
@@ -193,7 +197,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return await self._post(
-            f"/knowledge-bases/{kb_id}/articles",
+            path_template("/knowledge-bases/{kb_id}/articles", kb_id=kb_id),
             body=await async_maybe_transform(
                 {
                     "title": title,
@@ -238,7 +242,7 @@ class AsyncArticlesResource(AsyncAPIResource):
         if not kb_id:
             raise ValueError(f"Expected a non-empty value for `kb_id` but received {kb_id!r}")
         return await self._get(
-            f"/knowledge-bases/{kb_id}/articles",
+            path_template("/knowledge-bases/{kb_id}/articles", kb_id=kb_id),
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
