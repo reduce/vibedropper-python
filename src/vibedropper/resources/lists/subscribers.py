@@ -5,7 +5,7 @@ from __future__ import annotations
 import httpx
 
 from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from ..._utils import maybe_transform, async_maybe_transform
+from ..._utils import path_template, maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
 from ..._response import (
@@ -24,6 +24,8 @@ __all__ = ["SubscribersResource", "AsyncSubscribersResource"]
 
 
 class SubscribersResource(SyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> SubscribersResourceWithRawResponse:
         """
@@ -55,7 +57,8 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberListResponse:
         """
-        List subscribers
+        Returns all subscribers for the list ordered by subscribe date descending.
+        Includes linked customer data.
 
         Args:
           extra_headers: Send extra headers
@@ -69,7 +72,7 @@ class SubscribersResource(SyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return self._get(
-            f"/lists/{list_id}/subscribers",
+            path_template("/lists/{list_id}/subscribers", list_id=list_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -93,9 +96,16 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber to list
+        Creates or updates the matching customer record and adds a subscriber entry.
+        Returns 400 with code `duplicate` if already subscribed.
 
         Args:
+          custom_fields: Arbitrary key-value metadata
+
+          pickup_location_id: Pickup location ID (must belong to the given regionId)
+
+          region_id: Region ID to assign to the customer
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -107,7 +117,7 @@ class SubscribersResource(SyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return self._post(
-            f"/lists/{list_id}/subscribers",
+            path_template("/lists/{list_id}/subscribers", list_id=list_id),
             body=maybe_transform(
                 {
                     "email": email,
@@ -137,7 +147,7 @@ class SubscribersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber from list
+        Remove a subscriber from a list
 
         Args:
           extra_headers: Send extra headers
@@ -153,7 +163,7 @@ class SubscribersResource(SyncAPIResource):
         if not subscriber_id:
             raise ValueError(f"Expected a non-empty value for `subscriber_id` but received {subscriber_id!r}")
         return self._delete(
-            f"/lists/{list_id}/subscribers/{subscriber_id}",
+            path_template("/lists/{list_id}/subscribers/{subscriber_id}", list_id=list_id, subscriber_id=subscriber_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -162,6 +172,8 @@ class SubscribersResource(SyncAPIResource):
 
 
 class AsyncSubscribersResource(AsyncAPIResource):
+    """Manage list subscribers"""
+
     @cached_property
     def with_raw_response(self) -> AsyncSubscribersResourceWithRawResponse:
         """
@@ -193,7 +205,8 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberListResponse:
         """
-        List subscribers
+        Returns all subscribers for the list ordered by subscribe date descending.
+        Includes linked customer data.
 
         Args:
           extra_headers: Send extra headers
@@ -207,7 +220,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return await self._get(
-            f"/lists/{list_id}/subscribers",
+            path_template("/lists/{list_id}/subscribers", list_id=list_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -231,9 +244,16 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberAddResponse:
         """
-        Add subscriber to list
+        Creates or updates the matching customer record and adds a subscriber entry.
+        Returns 400 with code `duplicate` if already subscribed.
 
         Args:
+          custom_fields: Arbitrary key-value metadata
+
+          pickup_location_id: Pickup location ID (must belong to the given regionId)
+
+          region_id: Region ID to assign to the customer
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -245,7 +265,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         if not list_id:
             raise ValueError(f"Expected a non-empty value for `list_id` but received {list_id!r}")
         return await self._post(
-            f"/lists/{list_id}/subscribers",
+            path_template("/lists/{list_id}/subscribers", list_id=list_id),
             body=await async_maybe_transform(
                 {
                     "email": email,
@@ -275,7 +295,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> SubscriberRemoveResponse:
         """
-        Remove subscriber from list
+        Remove a subscriber from a list
 
         Args:
           extra_headers: Send extra headers
@@ -291,7 +311,7 @@ class AsyncSubscribersResource(AsyncAPIResource):
         if not subscriber_id:
             raise ValueError(f"Expected a non-empty value for `subscriber_id` but received {subscriber_id!r}")
         return await self._delete(
-            f"/lists/{list_id}/subscribers/{subscriber_id}",
+            path_template("/lists/{list_id}/subscribers/{subscriber_id}", list_id=list_id, subscriber_id=subscriber_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),

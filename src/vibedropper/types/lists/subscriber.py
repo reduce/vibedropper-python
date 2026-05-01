@@ -7,6 +7,7 @@ from typing_extensions import Literal
 from pydantic import Field as FieldInfo
 
 from ..._models import BaseModel
+from ..customer import Customer
 
 __all__ = ["Subscriber"]
 
@@ -14,7 +15,7 @@ __all__ = ["Subscriber"]
 class Subscriber(BaseModel):
     id: Optional[str] = None
 
-    customer: Optional[object] = None
+    customer: Optional[Customer] = None
 
     custom_fields: Optional[object] = FieldInfo(alias="customFields", default=None)
 

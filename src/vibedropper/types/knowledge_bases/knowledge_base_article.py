@@ -26,6 +26,7 @@ class KnowledgeBaseArticle(BaseModel):
     category_id: Optional[str] = FieldInfo(alias="categoryId", default=None)
 
     content: Optional[str] = None
+    """HTML content"""
 
     created_at: Optional[datetime] = FieldInfo(alias="createdAt", default=None)
 

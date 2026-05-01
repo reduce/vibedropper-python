@@ -16,7 +16,7 @@ class ArticleCreateParams(TypedDict, total=False):
     category_id: Annotated[Optional[str], PropertyInfo(alias="categoryId")]
 
     content: str
-    """HTML or markdown content"""
+    """HTML content"""
 
     excerpt: Optional[str]
 

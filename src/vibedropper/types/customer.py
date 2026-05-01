@@ -1,52 +1,75 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import List, Optional
+import typing
 from datetime import datetime
 
 from pydantic import Field as FieldInfo
 
 from .._models import BaseModel
 
-__all__ = ["Customer"]
+__all__ = ["Customer", "List", "Role"]
+
+
+class List(BaseModel):
+    id: typing.Optional[str] = None
+
+    name: typing.Optional[str] = None
+
+
+class Role(BaseModel):
+    id: typing.Optional[str] = None
+
+    color: typing.Optional[str] = None
+
+    description: typing.Optional[str] = None
+
+    name: typing.Optional[str] = None
 
 
 class Customer(BaseModel):
-    id: Optional[str] = None
+    id: typing.Optional[str] = None
 
-    address_line1: Optional[str] = FieldInfo(alias="addressLine1", default=None)
+    address_line1: typing.Optional[str] = FieldInfo(alias="addressLine1", default=None)
 
-    address_line2: Optional[str] = FieldInfo(alias="addressLine2", default=None)
+    address_line2: typing.Optional[str] = FieldInfo(alias="addressLine2", default=None)
 
-    average_order_value: Optional[float] = FieldInfo(alias="averageOrderValue", default=None)
+    average_order_value: typing.Optional[float] = FieldInfo(alias="averageOrderValue", default=None)
 
-    city: Optional[str] = None
+    city: typing.Optional[str] = None
 
-    country: Optional[str] = None
+    country: typing.Optional[str] = None
 
-    email: Optional[str] = None
+    created_at: typing.Optional[datetime] = FieldInfo(alias="createdAt", default=None)
 
-    first_name: Optional[str] = FieldInfo(alias="firstName", default=None)
+    email: typing.Optional[str] = None
 
-    last_name: Optional[str] = FieldInfo(alias="lastName", default=None)
+    first_name: typing.Optional[str] = FieldInfo(alias="firstName", default=None)
 
-    last_purchase_date: Optional[datetime] = FieldInfo(alias="lastPurchaseDate", default=None)
+    last_name: typing.Optional[str] = FieldInfo(alias="lastName", default=None)
 
-    lists: Optional[List[object]] = None
+    last_purchase_date: typing.Optional[datetime] = FieldInfo(alias="lastPurchaseDate", default=None)
 
-    name: Optional[str] = None
+    lists: typing.Optional[typing.List[List]] = None
+    """Lists this customer is subscribed to"""
 
-    org_id: Optional[str] = FieldInfo(alias="orgId", default=None)
+    name: typing.Optional[str] = None
 
-    pickup_location: Optional[object] = FieldInfo(alias="pickupLocation", default=None)
+    org_id: typing.Optional[str] = FieldInfo(alias="orgId", default=None)
 
-    postal_code: Optional[str] = FieldInfo(alias="postalCode", default=None)
+    pickup_location: typing.Optional[object] = FieldInfo(alias="pickupLocation", default=None)
 
-    purchase_count: Optional[int] = FieldInfo(alias="purchaseCount", default=None)
+    postal_code: typing.Optional[str] = FieldInfo(alias="postalCode", default=None)
 
-    region: Optional[object] = None
+    purchase_count: typing.Optional[int] = FieldInfo(alias="purchaseCount", default=None)
 
-    roles: Optional[List[object]] = None
+    region: typing.Optional[object] = None
 
-    state: Optional[str] = None
+    roles: typing.Optional[typing.List[Role]] = None
+    """Roles assigned to this customer"""
 
-    total_spent: Optional[float] = FieldInfo(alias="totalSpent", default=None)
+    state: typing.Optional[str] = None
+
+    total_spent: typing.Optional[float] = FieldInfo(alias="totalSpent", default=None)
+    """Total amount spent across all orders"""
+
+    updated_at: typing.Optional[datetime] = FieldInfo(alias="updatedAt", default=None)

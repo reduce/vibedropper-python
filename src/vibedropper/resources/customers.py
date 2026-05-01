@@ -8,7 +8,7 @@ import httpx
 
 from ..types import customer_list_params, customer_update_params
 from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from .._utils import maybe_transform, async_maybe_transform
+from .._utils import path_template, maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
 from .._response import (
@@ -26,6 +26,8 @@ __all__ = ["CustomersResource", "AsyncCustomersResource"]
 
 
 class CustomersResource(SyncAPIResource):
+    """Manage customers"""
+
     @cached_property
     def with_raw_response(self) -> CustomersResourceWithRawResponse:
         """
@@ -57,7 +59,7 @@ class CustomersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerRetrieveResponse:
         """
-        Get customer
+        Get a customer
 
         Args:
           extra_headers: Send extra headers
@@ -71,7 +73,7 @@ class CustomersResource(SyncAPIResource):
         if not customer_id:
             raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
         return self._get(
-            f"/customers/{customer_id}",
+            path_template("/customers/{customer_id}", customer_id=customer_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -101,7 +103,7 @@ class CustomersResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerUpdateResponse:
         """
-        Update customer
+        Update a customer
 
         Args:
           extra_headers: Send extra headers
@@ -115,7 +117,7 @@ class CustomersResource(SyncAPIResource):
         if not customer_id:
             raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
         return self._patch(
-            f"/customers/{customer_id}",
+            path_template("/customers/{customer_id}", customer_id=customer_id),
             body=maybe_transform(
                 {
                     "address_line1": address_line1,
@@ -155,7 +157,7 @@ class CustomersResource(SyncAPIResource):
         List customers
 
         Args:
-          search: Search by name or email
+          search: Search by name or email (case-insensitive)
 
           extra_headers: Send extra headers
 
@@ -186,6 +188,8 @@ class CustomersResource(SyncAPIResource):
 
 
 class AsyncCustomersResource(AsyncAPIResource):
+    """Manage customers"""
+
     @cached_property
     def with_raw_response(self) -> AsyncCustomersResourceWithRawResponse:
         """
@@ -217,7 +221,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerRetrieveResponse:
         """
-        Get customer
+        Get a customer
 
         Args:
           extra_headers: Send extra headers
@@ -231,7 +235,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         if not customer_id:
             raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
         return await self._get(
-            f"/customers/{customer_id}",
+            path_template("/customers/{customer_id}", customer_id=customer_id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -261,7 +265,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> CustomerUpdateResponse:
         """
-        Update customer
+        Update a customer
 
         Args:
           extra_headers: Send extra headers
@@ -275,7 +279,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         if not customer_id:
             raise ValueError(f"Expected a non-empty value for `customer_id` but received {customer_id!r}")
         return await self._patch(
-            f"/customers/{customer_id}",
+            path_template("/customers/{customer_id}", customer_id=customer_id),
             body=await async_maybe_transform(
                 {
                     "address_line1": address_line1,
@@ -315,7 +319,7 @@ class AsyncCustomersResource(AsyncAPIResource):
         List customers
 
         Args:
-          search: Search by name or email
+          search: Search by name or email (case-insensitive)
 
           extra_headers: Send extra headers
 

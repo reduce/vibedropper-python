@@ -1,6 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 from typing_extensions import Literal
 
@@ -31,7 +31,5 @@ class Page(BaseModel):
     slug: Optional[str] = None
 
     status: Optional[Literal["DRAFT", "ACTIVE", "ENDED", "ARCHIVED"]] = None
-
-    store_blocks: Optional[List[object]] = FieldInfo(alias="storeBlocks", default=None)
 
     updated_at: Optional[datetime] = FieldInfo(alias="updatedAt", default=None)

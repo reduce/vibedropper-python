@@ -13,4 +13,4 @@ class CustomerListParams(TypedDict, total=False):
     page: int
 
     search: str
-    """Search by name or email"""
+    """Search by name or email (case-insensitive)"""
