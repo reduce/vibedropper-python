@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.5.0 (2026-05-01)
+
+Full Changelog: [v0.4.0...v0.5.0](https://github.com/reduce/vibedropper-python/compare/v0.4.0...v0.5.0)
+
+### Features
+
+* **api:** api update ([132d96d](https://github.com/reduce/vibedropper-python/commit/132d96deaa5ae779246c7e1e77d0ad61ad8d1a71))
+* **internal:** implement indices array format for query and form serialization ([a442e3a](https://github.com/reduce/vibedropper-python/commit/a442e3a89a6cc384d5ed9bf375d46fb7d4d3bf19))
+* support setting headers via env ([aea7149](https://github.com/reduce/vibedropper-python/commit/aea714977d16f4bb5f48cb8e668fb8813aa55140))
+
+
+### Bug Fixes
+
+* **client:** preserve hardcoded query params when merging with user params ([274dbd5](https://github.com/reduce/vibedropper-python/commit/274dbd525675d20f0e860b109de157401931493b))
+* **deps:** bump minimum typing-extensions version ([c977e76](https://github.com/reduce/vibedropper-python/commit/c977e76ced27a7ff83d17d732853b2c3dbfcef67))
+* ensure file data are only sent as 1 parameter ([74b0664](https://github.com/reduce/vibedropper-python/commit/74b066497e95798d12ef0f693d99eab5db409ce7))
+* **pydantic:** do not pass `by_alias` unless set ([f930e2f](https://github.com/reduce/vibedropper-python/commit/f930e2f0f17f582f4d005ccbba2805d55d265968))
+* sanitize endpoint path params ([853c5c7](https://github.com/reduce/vibedropper-python/commit/853c5c725460eab9ef9ef1e0552f77d4c874b66e))
+* use correct field name format for multipart file arrays ([ff5ae1d](https://github.com/reduce/vibedropper-python/commit/ff5ae1d355065ae4dc2566794b447d7856b9d659))
+
+
+### Performance Improvements
+
+* **client:** optimize file structure copying in multipart requests ([0b69fe5](https://github.com/reduce/vibedropper-python/commit/0b69fe571c1999dc38ed321a51100ccf237ed267))
+
+
+### Chores
+
+* **ci:** skip lint on metadata-only changes ([adf223e](https://github.com/reduce/vibedropper-python/commit/adf223eb7e4ce56f9ab578f4732f3da5b7987dd8))
+* **ci:** skip uploading artifacts on stainless-internal branches ([b4b38e6](https://github.com/reduce/vibedropper-python/commit/b4b38e63e7b95eacde0de7c9a117a9e8a5f0c9c6))
+* **internal:** codegen related update ([67c8fb3](https://github.com/reduce/vibedropper-python/commit/67c8fb3e0201b065e11097a799e2c455537b8b5e))
+* **internal:** more robust bootstrap script ([94407c3](https://github.com/reduce/vibedropper-python/commit/94407c30fdbbdb8595c016fcb24785e090a65289))
+* **internal:** refactor authentication internals ([3f7c9e0](https://github.com/reduce/vibedropper-python/commit/3f7c9e0cf7a7d8221417cb107d041d9c645b9543))
+* **internal:** reformat pyproject.toml ([7412c52](https://github.com/reduce/vibedropper-python/commit/7412c5280276f5ed73ae8f47bb39359be9036e42))
+* **internal:** tweak CI branches ([cf4aebb](https://github.com/reduce/vibedropper-python/commit/cf4aebb393d1a8a9147d8fc93578d9d46a6b5cea))
+* **internal:** update gitignore ([bea77ad](https://github.com/reduce/vibedropper-python/commit/bea77ad49025c03d3fe0079bfdc98d16b10ee6df))
+* update SDK settings ([d1835a0](https://github.com/reduce/vibedropper-python/commit/d1835a0dd7c4f743ad9adca21507a1aadc353dc8))
+* update SDK settings ([b340f61](https://github.com/reduce/vibedropper-python/commit/b340f6146004c2db144eddd96ea48f331f777620))
+
 ## 0.4.0 (2026-03-04)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/reduce/vibedropper-python/compare/v0.3.0...v0.4.0)
